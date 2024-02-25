@@ -12,5 +12,6 @@ Thumbs.db
 /bin/
 /build/
 
-# Ignore MSS directory
+# Ignore specific directory
 MSS/
+SPEC_PROJECT_CODE/
