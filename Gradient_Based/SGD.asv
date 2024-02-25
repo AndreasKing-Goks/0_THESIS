@@ -1,0 +1,138 @@
+function [X,f,n,n2,n3,hist] = SGD(func, dfunc, X0, Eg, Ea, Er, maxIter, alpha_1, alpha_max, mu1, mu2,rho, maxMinorIter, X_Tol,funargs, dfunargs)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SGD()                                                                   %
+%                                                                         %
+% Implementation of the Strong Wolfe Conditions                           %
+%                                                                         %
+% Argument:                                                               %
+% func      : The objective function                                      %
+% dfunc     : The gradient function of the objective function             %
+% pk        : The step direction                                          %
+% X0        : The point at current iteration                              %
+% alpha_1   : Initial step length                                         %
+% alpha_max : Maximum allowr step length                                  %
+% mu1       : Sufficient decrease factor ~ as flat as possible            %
+% mu2       : Sufficient curvature factor ~ as flat as possible           %
+% rho       : Step length scaling up factor                               %
+% maxIter   : Maximum iteration                                           %
+% funargs   : Function argument                                           %
+% dfunargs  : Gradient function argument                                  %
+%                                                                         %
+% Output:                                                                 %
+% X         : Point after the stepping forward                            %
+% f         : Function value evaluated at X                               %
+% n         : The amount of line search iterations                        %
+% n2        : The amount of zoom phase iterations                         %
+% alpha_s   : The optimal step length                                     %
+%                                                                         %
+% Terminology:                                                            %
+% Bracketing : Finds and interval within which we are certain to find a   %
+%              point that satisfies the Strong Wolfe condition            %
+% Zooming    : Find the point that satisfies the Strrong Wolfe Condition  %
+%              within the bracket interval                                %
+%                                                                         %
+% Created:      20.11.2023	Andreas Sitorus                               %
+%                                                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Minimize f using the steepest descent method
+% returns the vector X, minimum f, number of iterations n, strong Wolfe
+% iterations n2, zoom iterations n3, and the search history (X,f) for each
+% major iteration
+
+% input: function func, function dfunc for the gradient, starting point X0,
+% convergence parameters Ea, Er, Eg, the maximum number of major iterations maxIter,
+% and strong Wolfe search parameters
+%% Initialization
+n2 = zeros(maxIter,1);              % Strong Wolfe iteration
+n3 = zeros(maxIter,1);              % Zoom phase iteration
+hist = [];                          % History counter for plotting (Point and Function Value)
+k = 1;                              % SGD iteration
+Xs = zeros(length(X0),maxIter+1);   % X point after step
+fs = zeros(maxIter+1,1);            % Function value evaluated at Xs
+cond_1 = zeros(maxIter+1,1);        %
+gk = zeros(length(X0),maxIter);     % Gradient container
+pk = zeros(length(X0),maxIter);     % Direction container
+done = 0;                           % Stopping flag for convergence
+X_change = X_Tol+1;                 % First iteration convergence criteria
+Xs(:,1) = X0;                       % Initial point 
+
+%% SGD process
+while k<=maxIter && ~done
+    % Stop if iteration process reach tha maximum or convergence criteria
+    % is fulfilled
+
+    % Compute the gradient of the function
+    gk(:,k) = dfunc(Xs(:,k),dfunargs);
+    
+    % Convergence check
+    % Only after the first iteration
+    if k>1
+        % After the first iteration, compute difference criteria
+        X_change = abs(Xs(:,k) - Xs(:,k-1) );
+    end
+    
+    % Stop if gradient lower than the gradient criteria and point
+    % difference criteria
+    if (norm(gk(:,k),2) <= Eg && (max(X_change) < X_Tol))
+            X = Xs(:,k);
+            f = func(X,funargs);
+            done = 1; % STOP
+    else
+        % If criteria is not fulfilled, compute the direction
+        pk(:,k) = -gk(:,k)/norm(gk(:,k),2);
+
+        % Compute a line search to find the new step length in the direction of pk
+        [Xs(:,k+1),fs(k+1),n2(k),n3(k),alpha_s] = strongwolfe(func, dfunc, pk(:,k), Xs(:,k), alpha_1,...
+            alpha_max, mu1, mu2,rho, maxMinorIter,funargs,dfunargs);
+        
+        % Store the optimized step length as the step length for the next search
+        if k>1
+            scale_factor = (gk(:,k-1).'*pk(:,k-1))/(gk(:,k).'*pk(:,k));
+            alpha_1 = alpha_s * scale_factor; 
+        else
+            % For the first iteration only 
+            alpha_1 = alpha_s; 
+        end
+        
+        % Evaluate the value for current iteration at current stepping
+        % point
+        fs(k) = func(Xs(:,k),funargs);
+
+        % Check for convergence criteria
+        % Compute the status (Boolean) value difference criteria
+        cond_1(k) = abs(fs(k+1) - fs(k)) <= (Ea + Er*abs(fs(k)));
+
+        if (k>1) && (cond_1(k) == 1) 
+            % If it is not the first iteration and convergence criteria is
+            % True
+            X_change = abs(Xs(:,k) - Xs(:,k-1) );
+            
+            % If the maximum X difference lower than the criteria, stop.
+            if max(X_change) < X_Tol
+                % Get the point for this iteration
+                X = Xs(:,k);
+
+                % Get the function value for this iteration
+                f = fs(k);
+                done = 1; % STOP
+            end
+        end
+    end
+    % Continue to the next iteration
+    k = k+1;
+end
+
+% If the iteration process goes above maximum iteration, get the current
+% point and current function value
+if k>=maxIter
+    X = Xs(:,k);
+    f = fs(k);
+end
+
+% Match the n with iteration k
+n = k-1;
+
+% Store the history
+hist = [Xs(:,1:n).'; fs(1:n)];
+n2 = n2(1:n); 
+n3 = n3(1:n); 

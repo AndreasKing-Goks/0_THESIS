@@ -1,0 +1,15 @@
+function Output = Convert_Measurement(Pos_N_M, Velo_B_M, Acc_B_M)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Convert_Measurement()                                                   %
+%                                                                         %              
+% Set initial conditions and fixed parameters for the sphere dynamics     %
+%                                                                         %
+% Created:      27.09.2023	Andreas Sitorus                               %
+%                                                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Pos_E = Pos_N_M;
+Velo_B = Velo_B_M;
+Acc_B = Acc_B_M
+
+end

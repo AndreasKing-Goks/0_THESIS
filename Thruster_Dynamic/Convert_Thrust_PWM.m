@@ -1,0 +1,30 @@
+function [Result] = Convert_Thrust_PWM(val_desired, voltage, mode)
+%% Add Path
+% Current dir
+currentDir = fileparts(mfilename('fullpath'));
+
+% Add the 'T200_Data' path
+T200_Data_Path = fullfile(currentDir, 'T200_Data');
+addpath(T200_Data_Path);
+
+%% Load Data
+load(fullfile(T200_Data_Path, 'thruster_data.mat'));
+fieldname = sprintf('voltage_%d', voltage);
+
+force = thruster_data.(fieldname).data(:,6);
+pwm = thruster_data.(fieldname).data(:,1);
+
+% Remove zero-thrust regions from data
+non_zero_force = force(force ~= 0);
+non_zero_pwm = pwm(force ~= 0);
+
+%% Interpolate Data
+% Switch Mode
+% Force to PWM
+if mode == 0
+    Result = interp1(non_zero_force, non_zero_pwm, val_desired, 'linear');
+% PWM to Force
+elseif mode == 1
+    Result = interp1(non_zero_pwm, non_zero_force, val_desired, 'linear');
+end
+end

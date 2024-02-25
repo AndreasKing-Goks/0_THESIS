@@ -1,0 +1,60 @@
+%% Ballast hook configuration
+% Binary encoding for all 9 available hooks
+% If available = 1
+% If not = 0
+Hook_encoding = ones(1,9);
+
+% Hook location [x y z]
+% Top
+Hook_1 = [.2 0 .229];
+Hook_2 = [.125 0 .229];
+Hook_3 = [-.2 0 .229];
+
+% Thruster
+Hook_4 = [0 .65 0];     % Right
+Hook_5 = [0 -.65 0];    % Left
+
+% Bottom
+Hook_6 = [.171 0 -.229];
+Hook_7 = [.057 0 -.229];
+Hook_8 = [-.057 0 -.229];
+Hook_9 = [-.171 0 -.229];
+
+Hook_Pos = [Hook_1, Hook_2, Hook_3, Hook_4, Hook_5, Hook_6, Hook_7, Hook_8, Hook_9];
+
+%% Ballast
+% Type
+foam = 35;      % kg/m3
+s_steel = 7700; % kg/m3
+
+% Dimension
+cross_sec = .25^2;
+S_size = .05;
+M_size = .1;
+L_size = .15;
+
+% Volume
+S_Vol = cross_sec * S_size;
+M_Vol = cross_sec * M_size;
+L_Vol = cross_sec * L_size;
+
+% Mass
+Floater_S = S_Vol * foam;   % kg
+Floater_M = M_Vol * foam;   % kg
+Floater_L = L_Vol * foam;   % kg
+
+Weght_S = S_Vol * metal;   % kg
+Weght_M = M_Vol * metal;   % kg
+Weght_L = L_Vol * metal;   % kg
+
+% Available ballast amount
+N_Floater_S = 12;
+N_Floater_M = 12;
+N_Floater_L = 12;
+
+N_Weight_S = 2;
+N_Weight_M = 2;
+N_Weight_L = 2;
+
+%% Ballast Selection Algorithm
+% Create 
