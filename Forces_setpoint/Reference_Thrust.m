@@ -1,7 +1,7 @@
 function [resampled_thrust, resampled_time] = Reference_Thrust(set_points,step_value)
 %% Add Path to MSS Toolbox
 % Current dir
-currentDir = fileparts('/home/goks/Documents/MIR/Thesis/0_THESIS/');
+currentDir = fileparts('/home/goks/Documents/MIR/Thesis/MIR_THESIS/');
 
 % Add the 'MSS' path
 utilPath = fullfile(currentDir, 'MSS');

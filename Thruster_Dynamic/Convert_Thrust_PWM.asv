@@ -15,18 +15,18 @@ force = thruster_data.(fieldname).data(:,6);
 pwm = thruster_data.(fieldname).data(:,1);
 
 % Remove zero-thrust regions from data
-[unique_force, idx] = unique(force, 'stable');
-unique_pwm = pwm(idx);
+non_zero_force = force(force ~= 0);
+non_zero_pwm = pwm(force ~= 0);
 
 %% Interpolate Data
 % Switch Mode
 % Force to PWM
 if mode == 0
-    PWM_est = interp1(unique_force, unique_pwm, val_desired, 'linear');
-    Result = PWM_est;
+    PWM_est = interp1(non_zero_force, non_zero_pwm, val_desired, 'linear');
+    Result = PWM_est
 % PWM to Force
 elseif mode == 1
-    Force_est = interp1(unique_pwm, unique_force, val_desired, 'linear');
-    Result = Force_est;
+    Force_est = interp1(non_zero_pwm, non_zero_force, val_desired, 'linear');
+    Result = PWM_est
 end
 end

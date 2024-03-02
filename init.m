@@ -38,8 +38,16 @@ Ex_Force = Command_Force(Input_F, F_Coord);
 impulse_time = 0.001;
 
 %% Initial Condition
+% States
 Pos_N = Param.IC.Pos;
 Velo_B = Param.IC.Velo;
+
+% Thruster Dynamics
+upper_limit = 30;
+lower_limit = -upper_limit;
+thrust_rate = 0;
+
+
 
 %% Ballast Force
 % How to use:
