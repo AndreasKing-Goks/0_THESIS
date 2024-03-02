@@ -45,9 +45,16 @@ Velo_B = Param.IC.Velo;
 % Thruster Dynamics
 upper_limit = 30;
 lower_limit = -upper_limit;
-thrust_rate = 0;
+thrust_rate = 5;
+
+%% Reference Model Parameters
 
 
+%% Controller Model Parameters
+
+
+%% Extended Kalman Filter Parameters
+[inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param();
 
 %% Ballast Force
 % How to use:
@@ -83,5 +90,5 @@ Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
 %% HELP READING Acceleration result
 % Forces defined in NED at first, then transformed to the body coordinate
 % Thus, positive sign means downwards
-% Postive acceleration means Negatively Buoyant
+% Positive acceleration means Negatively Buoyant
 % Negative acceleration means Positively Buoyant
