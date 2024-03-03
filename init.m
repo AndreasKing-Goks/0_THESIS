@@ -58,7 +58,7 @@ thrust_rate = 5;
 % There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
 
 % Cases selector
-Case = 2;
+Case = 1;
 
 % Define time check points
 % Note:
@@ -87,6 +87,16 @@ end
 % Set the stop time of your Simulink model
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
+%% For Test Reference Model
+% MANUAL REFERENCE MODEL
+ti = [1/100, 1/100, 1/100, 1/200, 1/200, 1/200];      %-----TUNE 
+Af = diag(ti);
+
+omega_is = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2];      %-----TUNE 
+zeta_is = [1.5, 1.5, 1.5, 1.5, 1.5, 1.5];       %-----TUNE 
+
+Gamma = diag(omega_is);
+Omega = diag(2*omega_is.*zeta_is);
 
 %% Controller Model Parameters (PID)
 % Kp = [75459.3345349083; 277551.73586971; 120744473.878042];
