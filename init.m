@@ -24,6 +24,9 @@ addpath(fullfile(currentDir, 'Thruster_Dynamic'));
 % Add the 'Forces_setpoint' path
 addpath(fullfile(currentDir, 'Reference_Model'));
 
+% Add 'Case_Model' path
+addpath(fullfile(currentDir, 'Case_Model'));
+
 % Add 'Save_and_Plot' path
 addpath(fullfile(currentDir, 'Save_and_Plot'));
 
@@ -31,7 +34,7 @@ addpath(fullfile(currentDir, 'Save_and_Plot'));
 Param = BlueROV2_param();
 
 %% Timestep
-dt = 0.01;  %-----To set
+dt = 0.001;  %-----To set
 
 %% Input Force in Body Frame
 Input_F = [0; 0; 0];       % Forces in x-axis, y-axis, and z-axis (Body Frame)
@@ -51,10 +54,23 @@ lower_limit = -upper_limit;
 thrust_rate = 5;
 
 %% Reference Model Parameters
-set_points = {[0, 0], [100, 20], [100, 40], [500, 60], [550, 80], [1000, 90], [1000, 110], [300, 120], [300, 125], [100, 130], [500, 140], [300, 145], [300, 150], [0, 160]};
-step_value = dt;
+% Implement the pre-determined reference model for the controller
+% There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
 
-[resampled_model, resampled_time, stop_time] = Reference_Model(set_points,step_value);
+% Cases selector
+Case = 1;
+
+% Define time check points
+idle_time = 10;
+stop_time = 120;
+
+% Heave case
+[X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case(start_time, idle_time, ...
+    stop_time, dt);
+
+% Roll case
+
+% Pitch case
 
 % Set the stop time of your Simulink model
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
