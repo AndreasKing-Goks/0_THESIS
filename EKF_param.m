@@ -1,8 +1,5 @@
-function [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param()
+function [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt)
 global Param
-%% Timestep
-dt = 0.1;  %-----To set
-
 %% Bias
 % Bias Model
 Tb = diag([.1, .1, .1, .1, .1, .1]);    %-----TUNE 
