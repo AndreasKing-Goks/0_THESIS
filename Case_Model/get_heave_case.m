@@ -1,6 +1,6 @@
-function [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case(start_time, idle_time, stop_time, dt)
+function [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case(idle_time, stop_time, dt)
 %% Initialize mission boundaries
-start_pos = -0.9;
+start_pos = -0.8;
 end_pos = -0.2;
 
 %% Initialize step value
@@ -10,7 +10,7 @@ step_value = dt;
 idle_start = {[start_pos,0], [start_pos,idle_time]};
 
 %% Initialize idle stop
-idle_end = {[end_pos,(stop_time - idle_time/2)], [end_pos,stop_time]};
+idle_end = {[end_pos,(stop_time - idle_time)], [end_pos,stop_time]};
 
 %% Initialize heave set points (4 set points)
 test_period = (stop_time - idle_time) - idle_time;
@@ -24,7 +24,7 @@ t4 = idle_time + 4*time_cp_step;
 
 % Setpoints
 % note: ALWAYS CHECK WITH THE MISSION BOUNDARY
-cp1 = -0.8;
+cp1 = -0.75;
 cp2 = -0.6;
 cp3 = -0.5;
 cp4 = -0.3;

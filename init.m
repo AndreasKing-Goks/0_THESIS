@@ -58,19 +58,31 @@ thrust_rate = 5;
 % There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
 
 % Cases selector
-Case = 1;
+Case = 2;
 
 % Define time check points
-idle_time = 10;
-stop_time = 120;
+% Note:
+% idle_time sets the time for the ROV to go to start position and stay idle for a while
+% ROV needs to be idle for some idle_time before the whole simulation ends
+idle_time = 10;     
+stop_time = 100;
 
-% Heave case
-[X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case(start_time, idle_time, ...
-    stop_time, dt);
-
-% Roll case
-
-% Pitch case
+% Case selector
+if Case == 1
+    % Heave case
+    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case(idle_time, ...
+        stop_time, dt);
+elseif Case == 2
+    % Roll case
+    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_roll_case(idle_time, ...
+        stop_time, dt);
+elseif Case == 3
+    % Pitch case
+    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_pitch_case(idle_time, ...
+        stop_time, dt);
+else
+    error('Case selection is not available. Stopping script.');
+end
 
 % Set the stop time of your Simulink model
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
