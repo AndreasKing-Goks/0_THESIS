@@ -1,4 +1,5 @@
-function [resampled_model, resampled_time] = Reference_Model(set_points,step_value)
+function [resampled_model, resampled_time] = Reference_Model_CHI(set_points,step_value)
+% Generate Reference Model with Cubic Hermite Interpolation metod
 %% Add Path to MSS Toolbox
 % Current dir
 currentDir = fileparts('/home/goks/Documents/MIR/Thesis/MIR_THESIS/');

@@ -139,7 +139,7 @@ for i = 1:numel(prompt)
         end
     end
     % Add ballast info to the configuration list
-    Hook_Encoding(1) = 1;
+    Hook_Encoding(i) = 1;
     Ballast_Config{i} = ballast;
 
     if error == 1

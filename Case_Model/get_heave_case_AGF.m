@@ -1,10 +1,8 @@
-function [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case(idle_time, stop_time, dt)
+function [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = get_heave_case_AGF( ...
+    idle_time, stop_time)
 %% Initialize mission boundaries
 start_pos = -0.8;
 end_pos = -0.2;
-
-%% Initialize step value
-step_value = dt;
 
 %% Initialize idle start
 idle_start = {[start_pos,0], [start_pos,idle_time]};
@@ -29,7 +27,7 @@ cp2 = -0.6;
 cp3 = -0.5;
 cp4 = -0.3;
 
-set_points_heave = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
+set_points_intermediate = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
 
 %% Initialize set points
 set_points_x = {[0,0], [0, stop_time]};
@@ -40,10 +38,10 @@ set_points_theta = {[0,0], [0, stop_time]};
 set_points_psi = {[0,0], [0, stop_time]};
 
 %% Create reference model
-[X_ref, ~] = Reference_Model(set_points_x,step_value);
-[Y_ref, ~] = Reference_Model(set_points_y,step_value);
-[Z_ref, resampled_time] = Reference_Model(set_points_z,step_value);
-[Phi_ref, ~] = Reference_Model(set_points_phi,step_value);
-[Theta_ref, ~] = Reference_Model(set_points_theta,step_value);
-[Psi_ref, ~] = Reference_Model(set_points_psi,step_value);
+[X_ref, time_stamps_x] = Reference_Model_CHI(set_points_x);
+[Y_ref, time_stamps_y] = Reference_Model_CHI(set_points_y);
+[Z_ref, time_stamps_z] = Reference_Model_CHI(set_points_z);
+[Phi_ref, time_stamps_phi] = Reference_Model_CHI(set_points_phi);
+[Theta_ref, time_stamps_theta] = Reference_Model_CHI(set_points_theta);
+[Psi_ref, time_stamps_psi] = Reference_Model_CHI(set_points_psi);
 end
