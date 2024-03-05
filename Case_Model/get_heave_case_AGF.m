@@ -27,7 +27,7 @@ cp2 = -0.6;
 cp3 = -0.5;
 cp4 = -0.3;
 
-set_points_intermediate = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
+set_points_heave = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
 
 %% Initialize set points
 set_points_x = {[0,0], [0, stop_time]};
@@ -38,10 +38,10 @@ set_points_theta = {[0,0], [0, stop_time]};
 set_points_psi = {[0,0], [0, stop_time]};
 
 %% Create reference model
-[X_ref, time_stamps_x] = Reference_Model_CHI(set_points_x);
-[Y_ref, time_stamps_y] = Reference_Model_CHI(set_points_y);
-[Z_ref, time_stamps_z] = Reference_Model_CHI(set_points_z);
-[Phi_ref, time_stamps_phi] = Reference_Model_CHI(set_points_phi);
-[Theta_ref, time_stamps_theta] = Reference_Model_CHI(set_points_theta);
-[Psi_ref, time_stamps_psi] = Reference_Model_CHI(set_points_psi);
+[X_ref, time_stamps_x] = Reference_Model_AGF(set_points_x);
+[Y_ref, time_stamps_y] = Reference_Model_AGF(set_points_y);
+[Z_ref, time_stamps_z] = Reference_Model_AGF(set_points_z);
+[Phi_ref, time_stamps_phi] = Reference_Model_AGF(set_points_phi);
+[Theta_ref, time_stamps_theta] = Reference_Model_AGF(set_points_theta);
+[Psi_ref, time_stamps_psi] = Reference_Model_AGF(set_points_psi);
 end

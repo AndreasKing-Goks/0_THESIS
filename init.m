@@ -55,18 +55,12 @@ thrust_rate = 5;
 
 %% Reference Model Parameters
 % Implement the pre-determined reference model for the controller
-% Method: Automatic Guidance Function
+% Method 1: Cubic Hermite Interpolation
+% Method 2: Automatic Guidance Function
 % There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
 
-% Reference Model Tuning Parameters
-ti = [1/1, 1/1, 1/1, 1/2, 1/2, 1/2];      %-----TUNE 
-Af = diag(ti);
-
-omega_is = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2];      %-----TUNE 
-zeta_is = [1.5, 1.5, 1.5, 1.5, 1.5, 1.5];       %-----TUNE 
-
-Gamma = diag(omega_is);
-Omega = diag(2*omega_is.*zeta_is);
+% Methods selector
+Method = 2;
 
 % Cases selector
 Case = 1;
@@ -76,32 +70,24 @@ Case = 1;
 % idle_time sets the time for the ROV to go to start position and stay idle for a while
 % ROV needs to be idle for some idle_time before the whole simulation ends
 idle_time = 10;     
-stop_time = 100;
+stop_time = 60;
 
-% Case selector
-if Case == 1
-    % Heave case
-    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = get_heave_case_AGF( ...
-        idle_time, stop_time);
-elseif Case == 2
-    % Roll case
-    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = get_roll_case_AGF( ...
-        idle_time, stop_time);
-elseif Case == 3
-    % Pitch case
-    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = get_pitch_case_AGF( ...
-        idle_time, stop_time);
+% Get parameters
+if Method == 1
+    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = RM_param_CHI(Case, idle_time, stop_time, dt);
+elseif Method == 2
+    [Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
 else
-    error('Case selection is not available. Stopping script.');
+    error('Method selection is not available. Stopping script.');
 end
 
 % Set the stop time of your Simulink model
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
-% Kp = [75459.3345349083; 277551.73586971; 120744473.878042];
-% Ki = [137.081306245593; 3163.274947400198; 335358.448218978];
-% Kd = [1660451.40544401; 3920391.80535684; 1605063439.04156];
+Kp = [1; 1; 1; 1; 1; 1];
+Ki = [1; 1; 1; 1; 1; 1];
+Kd = [1; 1; 1; 1; 1; 1];
 
 %% Extended Kalman Filter Parameters
 [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
@@ -144,37 +130,3 @@ Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
 % Negative acceleration means Positively Buoyant
 
 %% UNUSED
-% % Reference Model Parameters
-% % Implement the pre-determined reference model for the controller
-% % Method: Cubic Hermite Interpolation
-% % There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
-% 
-% % Cases selector
-% Case = 1;
-% 
-% % Define time check points
-% % Note:
-% % idle_time sets the time for the ROV to go to start position and stay idle for a while
-% % ROV needs to be idle for some idle_time before the whole simulation ends
-% idle_time = 10;     
-% stop_time = 100;
-% 
-% % Case selector
-% if Case == 1
-%     % Heave case
-%     [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_heave_case_CHI(idle_time, ...
-%         stop_time, dt);
-% elseif Case == 2
-%     % Roll case
-%     [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_roll_case_CHI(idle_time, ...
-%         stop_time, dt);
-% elseif Case == 3
-%     % Pitch case
-%     [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = get_pitch_case_CHI(idle_time, ...
-%         stop_time, dt);
-% else
-%     error('Case selection is not available. Stopping script.');
-% end
-% 
-% % Set the stop time of your Simulink model
-% set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));

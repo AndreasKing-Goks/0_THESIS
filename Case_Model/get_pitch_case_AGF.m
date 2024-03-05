@@ -27,14 +27,14 @@ cp2 = pi/4;
 cp3 = -pi/4;
 cp4 = -pi/4;
 
-set_points_heave = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
+set_points_pitch = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
 
 %% Initialize set points
 set_points_x = {[0,0], [0, stop_time]};
 set_points_y = {[0,0], [0, stop_time]};
 set_points_z = {[0,0], [0, stop_time]};
 set_points_phi = {[0,0], [0, stop_time]};
-set_points_theta = {idle_start{:}, set_points_heave{:}, idle_end{:}};
+set_points_theta = {idle_start{:}, set_points_pitch{:}, idle_end{:}};
 set_points_psi = {[0,0], [0, stop_time]};
 
 %% Create reference model

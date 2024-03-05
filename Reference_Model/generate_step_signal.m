@@ -1,15 +1,13 @@
-function y = generate_step_signal(set_points, t)
+function ref = generate_step_signal(val_checkpoints, time_stamps, t)
     % Initialize output signal
-    y = zeros(size(t));
+    ref = zeros(size(t));
 
     % Iterate through set points
-    for i = 1:length(set_points)
-        point = set_points{i};
-        value = point(1);
-        time = point(2);
+    for i = 1:length(val_checkpoints)
+        value = val_checkpoints(i);
+        time = time_stamps(i);
 
         % Generate step signal
-        y(t >= time) = value;
+        ref(t >= time) = value;
     end
 end
-
