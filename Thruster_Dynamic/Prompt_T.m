@@ -21,7 +21,7 @@ mode = 1;
 voltage = 14.8;
 
 % Check Thrust Allocation Matrix
-T = Thrust_Allocation();
+T = Thrust_Allocation()
 
 % Get result
 % result = Convert_Thrust_PWM(val_desired,voltage,mode)

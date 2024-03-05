@@ -19,7 +19,7 @@ function Param = BlueROV2_param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global Param
 %% Initial Speed and Position in NED Frame
-Param.IC.Pos = [0; 0; 10; 0; 0; 0];
+Param.IC.Pos = [0; 0; 0; 0; 0; 0];
 Param.IC.Velo = [0; 0; 0; 0; 0; 0];
 
 %% General Parameters
