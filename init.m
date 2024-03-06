@@ -70,7 +70,7 @@ Case = 1;
 % idle_time sets the time for the ROV to go to start position and stay idle for a while
 % ROV needs to be idle for some idle_time before the whole simulation ends
 idle_time = 10;     
-stop_time = 60;
+stop_time = 0.1;
 
 % Get parameters
 if Method == 1
