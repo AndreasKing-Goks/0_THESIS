@@ -1,6 +1,8 @@
 # MIR_THESIS
 "Simultaneous Hydrodynamic Parameters and Buoyancy Configuration Estimation of Underwater Vehicles for More Efficient Underwater Operation"
 
+By: Andreas Raja Goklas Sitorus
+
 Background:
 • People often do not track the actual dynamical parameters of underwater vehicles. Those dynamical parameters are added mass, drag coefficient, and buoyancy configuration.
 • Hydrodynamic parameters are difficult to measure. It often involves a high-computational process such as BEM/CFD. Empirical approaches might work but it lacks accuracy.
