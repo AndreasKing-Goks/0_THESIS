@@ -128,7 +128,7 @@ Param.Ca = [Ca11 Ca12;
 Param.Ca_o = (H_(Param.CB.rb_o))' * Param.Ca * V_t_b;
 
 % Total Coriolis-Centripetal Force
-Param.Fc_o = Param.Crb_o + Param.Ca_o;
+Param.Fc_o = (Param.Crb_o + Param.Ca_o);
 
 %% Damping Forces
 % Described in Body frame, at Center of Buoyancy
@@ -173,5 +173,5 @@ Param.Ft = Thruster_Force;
 Param.Ftet = Tether_Force;
 
 %% Acceleration Computation 
-Acc_G = (Param.MT) \ (Param.Ft + Param.Ftet - (Param.Fc_o + Param.Fd_o + Param.Fr_o + Param.g0));
+Acc_G = Param.inv_MT * (Param.Ft + Param.Ftet - (Param.Fc_o + Param.Fd_o + Param.Fr_o + Param.g0));
 end

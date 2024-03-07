@@ -85,5 +85,6 @@ Param.Ma_o = Transform(Param.Ma,Param.CB.rb_o);
 
 %% Generalized Mass Matrix
 Param.MT = Param.Mrb_o + Param.Ma_o;
+Param.inv_MT = inv(Param.MT);
 
 end

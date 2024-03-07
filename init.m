@@ -70,7 +70,7 @@ Case = 1;
 % idle_time sets the time for the ROV to go to start position and stay idle for a while
 % ROV needs to be idle for some idle_time before the whole simulation ends
 idle_time = 10;     
-stop_time = 0.1;
+stop_time = 100;
 
 % Get parameters
 if Method == 1
@@ -125,7 +125,7 @@ Env_Force = zeros(6,1);
 Tether_Force = zeros(6,1);
 
 %% Sphere Dynamic Model [FOR CHECKING]
-Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
+Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B);
 
 %% HELP READING Acceleration result
 % Forces defined in NED at first, then transformed to the body coordinate
