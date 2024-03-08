@@ -63,7 +63,7 @@ thrust_rate = 5;
 Method = 2;
 
 % Cases selector
-Case = 1;
+Case = 3;
 
 % Define time check points
 % Note:

@@ -47,8 +47,8 @@ t21 = 0;
 t22 = cos(phi);
 t23 = -sin(phi);
 t31 = 0;
-t32 = sin(phi) * cos(theta);
-t33 = cos(phi) * cos(theta);
+t32 = sin(phi) / cos(theta);
+t33 = cos(phi) / cos(theta);
 
 % Matrix
 T_Theta = [t11 t12 t13;
