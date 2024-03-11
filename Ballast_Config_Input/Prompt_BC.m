@@ -14,6 +14,6 @@ clc
 
 prompt = {0 0 0 'FS' 'FS' 0 0 0 0};
 
-[Ballast_Config, Hook_Encoding] = Ballast_Configuration(prompt);
+Ballast_Config = Ballast_Configuration(prompt);
 
-g0 = Ballast_Term(Ballast_Config);
+g0 = Ballast_Term(Ballast_Config)

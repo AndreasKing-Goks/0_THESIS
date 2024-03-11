@@ -30,6 +30,21 @@ addpath(fullfile(currentDir, 'Case_Model'));
 % Add 'Save_and_Plot' path
 addpath(fullfile(currentDir, 'Save_and_Plot'));
 
+%% Open Simulink Model
+% Correct modelName to exclude the file extension for bdIsLoaded
+modelName = 'BlueROV2_Exp_Simu';
+
+% Use the full file name including extension with open_system
+modelFileName = 'BlueROV2_Exp_Simu.slx';
+
+% Checking if the model is already loaded to avoid loading it again
+if ~bdIsLoaded(modelName)
+    open_system(modelFileName);
+    disp([modelName ' has been opened.']);
+else
+    disp([modelName ' is already open.']);
+end
+
 %% Initialize Workspace
 Param = BlueROV2_param();
 
@@ -63,7 +78,7 @@ thrust_rate = 5;
 Method = 2;
 
 % Cases selector
-Case = 3;
+Case = 1;
 
 % Define time check points
 % Note:
@@ -89,9 +104,9 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Ki = [4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52];
 % Kd = [7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25];
 
-Kp = [1; 1; 1; 1; 1; 1];
-Ki = [1; 1; 1; 1; 1; 1];
-Kd = [1; 1; 1; 1; 1; 1];
+Kp = [0.001; 0.001; 15; 0.001; 0.001; 0.001];
+Ki = [0.01; 0.01; 3; 0.01; 0.01; 0.01];
+Kd = [0.1; 0.1; 3; 0.1; 0.1; 0.1];
 
 %% Extended Kalman Filter Parameters
 [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
@@ -110,7 +125,7 @@ Kd = [1; 1; 1; 1; 1; 1];
 
 prompt = {0 0 0 'FS' 'FS' 0 0 0 0};
 
-[Ballast_Config, Hook_Encoding] = Ballast_Configuration(prompt);
+Ballast_Config = Ballast_Configuration(prompt);
 
 %Ballast_Force = zeros(6,1);
 Ballast_Force = Ballast_Term(Ballast_Config);

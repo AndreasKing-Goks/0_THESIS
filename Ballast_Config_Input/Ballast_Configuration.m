@@ -1,4 +1,4 @@
-function [Ballast_Config, Hook_Encoding] = Ballast_Configuration(prompt)
+function Ballast_Config = Ballast_Configuration(prompt)
 %% Ballast hook configuration
 % Hook location [x y z]
 % Top

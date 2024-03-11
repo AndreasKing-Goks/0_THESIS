@@ -30,6 +30,21 @@ addpath(fullfile(currentDir, 'Case_Model'));
 % Add 'Save_and_Plot' path
 addpath(fullfile(currentDir, 'Save_and_Plot'));
 
+%% Open Simulink Model
+% Correct modelName to exclude the file extension for bdIsLoaded
+modelName = 'BlueROV2_Exp_Simu';
+
+% Use the full file name including extension with open_system
+modelFileName = 'BlueROV2_Exp_Simu.slx';
+
+% Checking if the model is already loaded to avoid loading it again
+if ~bdIsLoaded(modelName)
+    open_system(modelFileName);
+    disp([modelName ' has been opened.']);
+else
+    disp([modelName ' is already open.']);
+end
+
 %% Initialize Workspace
 Param = BlueROV2_param();
 
@@ -74,9 +89,9 @@ stop_time = 100;
 
 % Get parameters
 if Method == 1
-    [Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
-if Method == 2
     [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = RM_param_CHI(Case, idle_time, stop_time, dt);
+elseif Method == 2
+    [Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
 else
     error('Method selection is not available. Stopping script.');
 end
@@ -85,9 +100,13 @@ end
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
-% Kp = [75459.3345349083; 277551.73586971; 120744473.878042];
-% Ki = [137.081306245593; 3163.274947400198; 335358.448218978];
-% Kd = [1660451.40544401; 3920391.80535684; 1605063439.04156];
+% Kp = [4.0966093832924e+39; 4.0966093832924e+39; 4.0966093832924e+39; 4.0966093832924e+39; 4.0966093832924e+39; 4.0966093832924e+39];
+% Ki = [4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52; 4.77986556841379e+52];
+% Kd = [7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25; 7.80107403788837e+25];
+
+Kp = [0.001; 0.001; 5; 0.001; 0.001; 0.001];
+Ki = [0.01; 0.01; 0.01; 0.01; 0.01; 0.01];
+Kd = [0.1; 0.1; ; 0.1; 0.1; 0.1];
 
 %% Extended Kalman Filter Parameters
 [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
@@ -106,7 +125,7 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 prompt = {0 0 0 'FS' 'FS' 0 0 0 0};
 
-[Ballast_Config, Hook_Encoding] = Ballast_Configuration(prompt);
+Ballast_Config = Ballast_Configuration(prompt);
 
 %Ballast_Force = zeros(6,1);
 Ballast_Force = Ballast_Term(Ballast_Config);
@@ -121,7 +140,7 @@ Env_Force = zeros(6,1);
 Tether_Force = zeros(6,1);
 
 %% Sphere Dynamic Model [FOR CHECKING]
-Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
+Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B);
 
 %% HELP READING Acceleration result
 % Forces defined in NED at first, then transformed to the body coordinate
