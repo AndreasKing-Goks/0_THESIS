@@ -85,7 +85,7 @@ Case = 1;
 % idle_time sets the time for the ROV to go to start position and stay idle for a while
 % ROV needs to be idle for some idle_time before the whole simulation ends
 idle_time = 10;     
-stop_time = 100;
+stop_time = 120;
 
 % Get parameters
 if Method == 1
@@ -110,9 +110,9 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Ki = [0.01; 0.01; 3; 0.01; 0.01; 0.01];
 % Kd = [0.1; 0.1; 35; 0.1; 0.1; 0.1];
 
-Kp = [0.001; 0.001; 12; 0.001; 0.001; 0.001];
-Ki = [0.01; 0.01; 3; 0.01; 0.01; 0.01];
-Kd = [0.1; 0.1; 35; 0.1; 0.1; 0.1];
+Kp = [0.001; 0.001; 19.5; 0.001; 0.001; 0.001];
+Ki = [0.01; 0.01; 3.1; 0.01; 0.01; 0.01];
+Kd = [0.1; 0.1; 36.1; 0.1; 0.1; 0.1];
 
 %% Extended Kalman Filter Parameters
 [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
