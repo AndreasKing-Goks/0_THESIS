@@ -53,7 +53,12 @@ Param = BlueROV2_param();
 Pos_N = Param.IC.Pos;
 Velo_B = Param.IC.Velo;
 
-%% Thruster Dynamics
+%% Thruster System
+% Thruster allocation
+T_alloc = Thrust_Allocation();
+T_alloc_ps = pinv(T_alloc);
+
+% Thruster constraints
 upper_limit = 30;
 lower_limit = -upper_limit;
 thrust_rate = 5;
@@ -61,21 +66,10 @@ thrust_rate = 5;
 %% Timestep
 dt = 0.1;  %-----To set
 
-%% Input Force in Body Frame
-Input_F = [0; 0; 0];       % Forces in x-axis, y-axis, and z-axis (Body Frame)
-F_Coord = [0; 0; 0];       % External forces exerted on the top of the sphere, in line with the center of gravity
-
-Ex_Force = Command_Force(Input_F, F_Coord);
-impulse_time = 0.001;
-
 %% Reference Model Parameters
 % Implement the pre-determined reference model for the controller
-% Method 1: Cubic Hermite Interpolation
-% Method 2: Automatic Guidance Function
+% Method : Automatic Guidance Function
 % There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
-
-% Methods selector
-Method = 2;
 
 % Cases selector
 Case = 1;
@@ -88,13 +82,7 @@ idle_time = 10;
 stop_time = 120;
 
 % Get parameters
-if Method == 1
-    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = RM_param_CHI(Case, idle_time, stop_time, dt);
-elseif Method == 2
-    [Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
-else
-    error('Method selection is not available. Stopping script.');
-end
+[Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
 
 % Set the stop time of your Simulink model
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
@@ -110,7 +98,7 @@ Ki = [1; 1; 3.1; 1; 1; 1];
 Kd = [1; 1; 36.1; 1; 1; 1];
 
 %% Extended Kalman Filter Parameters
-[inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
+% [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
 
 %% Ballast Force
 % How to use:

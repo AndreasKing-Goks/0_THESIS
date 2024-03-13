@@ -1,14 +1,8 @@
-function [J_Theta] = Jacobian(eta)
+function [R_Theta_nb] = Rot_nb(eta)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command                                                                 %
 %                                                                         %
-% Compute the Jacobian from {b} to {n}                                    %
-%                                                                         %
-% For 6-DOF Equations:                                                    %
-% [ndot = Jacobian(n_theta) * v]                                          %
-% -ndot = velocity expressed in NED frame                                 %
-% -n_theta = rotational part of position vector                           %
-% - v = velocity expressed in Body frame                                  %
+% Compute the Rotation from {b} to {n}                                    %
 %                                                                         %
 % Argument:                                                               %
 % eta     : Input positional vector                                       %
@@ -37,26 +31,4 @@ r33 = cos(theta) * cos(phi);
 R_Theta_nb = [r11 r12 r13;
               r21 r22 r23;
               r31 r32 r33];
-
-%% Angular Velocity Transformation Matrix
-% Element
-t11 = 1;
-t12 = sin(phi) * tan(theta);
-t13 = cos(phi) * tan(theta);
-t21 = 0;
-t22 = cos(phi);
-t23 = -sin(phi);
-t31 = 0;
-t32 = sin(phi) / cos(theta);
-t33 = cos(phi) / cos(theta);
-
-% Angular Velocity Rotation Matrix (from {b} to {n})
-T_Theta_nb = [t11 t12 t13;
-              t21 t22 t23;
-              t31 t32 t33];
-
-%% Jacobian
-J_Theta = [R_Theta_nb  zeros(3);
-           zeros(3) T_Theta_nb];
-
 end

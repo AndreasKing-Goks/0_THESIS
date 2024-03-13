@@ -70,12 +70,12 @@ Param.Mrb = diag([Param.m Param.m Param.m Param.MOI]);
 Param.Mrb_o = Transform(Param.Mrb,Param.CG.rg_o);
 
 %% Body Added Mass Matrix Transformed to CO
-Xud = 6.36;     % kg [9]
-Yvd = 7.12;     % kg [9]
-Zwd = 18.68;    % kg [9]
-Kpd = 0.189;    % kg.m2 [9]
-Mqd = 0.135;    % kg.m2 [9]
-Nrd = 0.222;    % kg.m2 [9]
+Xud = 6.3567;     % kg [9]
+Yvd = 7.1206;     % kg [9]
+Zwd = 18.6863;    % kg [9]
+Kpd = 0.1858;    % kg.m2 [9]
+Mqd = 0.1348;    % kg.m2 [9]
+Nrd = 0.2215;    % kg.m2 [9]
 
 Param.AM = [Xud Yvd Zwd Kpd Mqd Nrd];
 
