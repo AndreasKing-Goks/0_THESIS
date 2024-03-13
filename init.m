@@ -48,6 +48,16 @@ end
 %% Initialize Workspace
 Param = BlueROV2_param();
 
+%% Initial Condition
+% States
+Pos_N = Param.IC.Pos;
+Velo_B = Param.IC.Velo;
+
+%% Thruster Dynamics
+upper_limit = 30;
+lower_limit = -upper_limit;
+thrust_rate = 5;
+
 %% Timestep
 dt = 0.1;  %-----To set
 
@@ -57,16 +67,6 @@ F_Coord = [0; 0; 0];       % External forces exerted on the top of the sphere, i
 
 Ex_Force = Command_Force(Input_F, F_Coord);
 impulse_time = 0.001;
-
-%% Initial Condition
-% States
-Pos_N = Param.IC.Pos;
-Velo_B = Param.IC.Velo;
-
-% Thruster Dynamics
-upper_limit = 30;
-lower_limit = -upper_limit;
-thrust_rate = 5;
 
 %% Reference Model Parameters
 % Implement the pre-determined reference model for the controller
@@ -100,19 +100,14 @@ end
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
-% CP1 Heave
-% Kp = [0.001; 0.001; 15; 0.001; 0.001; 0.001];
-% Ki = [0.01; 0.01; 3; 0.01; 0.01; 0.01];
-% Kd = [0.1; 0.1; 3; 0.1; 0.1; 0.1];
+% % Best heave only 
+% Kp = [15; 15; 19.5; 19.5; 19.5; 15];
+% Ki = [2.5; 2.5; 3.1; 3.1; 3.1; 2.5];
+% Kd = [30; 30; 36.1; 36.1; 36.1; 30];
 
-% CP2 Heave
-% Kp = [0.001; 0.001; 15; 0.001; 0.001; 0.001];
-% Ki = [0.01; 0.01; 3; 0.01; 0.01; 0.01];
-% Kd = [0.1; 0.1; 35; 0.1; 0.1; 0.1];
-
-Kp = [0.001; 0.001; 19.5; 0.001; 0.001; 0.001];
-Ki = [0.01; 0.01; 3.1; 0.01; 0.01; 0.01];
-Kd = [0.1; 0.1; 36.1; 0.1; 0.1; 0.1];
+Kp = [1; 1; 19.5; 1; 1 ;1 ];
+Ki = [1; 1; 3.1; 1; 1; 1];
+Kd = [1; 1; 36.1; 1; 1; 1];
 
 %% Extended Kalman Filter Parameters
 [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
