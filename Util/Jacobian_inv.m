@@ -16,10 +16,10 @@ function [J_Theta_bn] = Jacobian_inv(eta)
 % Created:      27.09.2023	Andreas Sitorus                               %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Get the angular velocity
-phi = eta(4,1);       % Rolling angle
-theta = eta(5,1);     % Pitching angle
-psi = eta(6,1);       % Yaw angle
+%% Get the orientation
+phi = eta_n(4,1);       % Rolling angle
+theta = eta_n(5,1);     % Pitching angle
+psi = eta_n(6,1);       % Yaw angle
 
 %% Linear Velocity Transformation Matrix
 % Element

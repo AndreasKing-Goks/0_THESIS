@@ -94,9 +94,9 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Ki = [2.5; 2.5; 3.1; 3.1; 3.1; 2.5];
 % Kd = [30; 30; 36.1; 36.1; 36.1; 30];
 
-Kp = [1; 1; 19.5; 1; 1 ;1 ];
-Ki = [1; 1; 3.1; 1; 1; 1];
-Kd = [1; 1; 36.1; 1; 1; 1];
+Kp = [15; 15; 19.5; 19.5; 19.5; 15];
+Ki = [2.5; 2.5; 3.1; 3.1; 3.1; 2.5];
+Kd = [30; 30; 30; 30; 30; 30];
 
 %% Extended Kalman Filter Parameters
 % [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
