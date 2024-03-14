@@ -69,8 +69,12 @@ dt = 0.1;  %-----To set
 
 %% Reference Model Parameters
 % Implement the pre-determined reference model for the controller
-% Method : Automatic Guidance Function
+% Method 1: Cubic Hermite Interpolation
+% Method 2: Automatic Guidance Function
 % There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
+
+% Methods selector
+Method = 2;
 
 % Cases selector
 Case = 1;
@@ -83,7 +87,13 @@ idle_time = 10;
 stop_time = 120;
 
 % Get parameters
-[Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
+if Method == 1
+    [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, resampled_time] = RM_param_CHI(Case, idle_time, stop_time, dt);
+elseif Method == 2
+    [Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
+else
+    error('Method selection is not available. Stopping script.');
+end
 
 % Set the stop time of your Simulink model
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
