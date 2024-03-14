@@ -1,4 +1,4 @@
-function [J_Theta] = Jacobian(eta)
+function [J_Theta_nb] = Jacobian(eta)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command                                                                 %
 %                                                                         %
@@ -56,7 +56,7 @@ T_Theta_nb = [t11 t12 t13;
               t31 t32 t33];
 
 %% Jacobian
-J_Theta = [R_Theta_nb  zeros(3);
+J_Theta_nb = [R_Theta_nb  zeros(3);
            zeros(3) T_Theta_nb];
 
 end

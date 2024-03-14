@@ -56,7 +56,8 @@ Velo_B = Param.IC.Velo;
 %% Thruster System
 % Thruster allocation
 T_alloc = Thrust_Allocation();
-T_alloc_ps = pinv(T_alloc);
+lambda = 1e-3;
+T_alloc_ps = pinv(T_alloc' * T_alloc + lambda * eye(size(T_alloc, 2))) * T_alloc';
 
 % Thruster constraints
 upper_limit = 30;
