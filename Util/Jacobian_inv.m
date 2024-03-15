@@ -1,4 +1,4 @@
-function [J_Theta_bn] = Jacobian_inv(eta)
+function [J_Theta_bn] = Jacobian_inv(eta_n)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command                                                                 %
 %                                                                         %              
