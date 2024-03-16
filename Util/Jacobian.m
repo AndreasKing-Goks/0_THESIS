@@ -1,8 +1,8 @@
-function [R_Theta, T_Theta, J_Theta] = Jacobian(eta)
+function [J_Theta_nb] = Jacobian(eta_n)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command                                                                 %
-%                                                                         %              
-% Compute the Jacobian to integrate the next acceleration to velocity     %
+%                                                                         %
+% Compute the Jacobian from {b} to {n}                                    %
 %                                                                         %
 % For 6-DOF Equations:                                                    %
 % [ndot = Jacobian(n_theta) * v]                                          %
@@ -11,15 +11,15 @@ function [R_Theta, T_Theta, J_Theta] = Jacobian(eta)
 % - v = velocity expressed in Body frame                                  %
 %                                                                         %
 % Argument:                                                               %
-% X     : Input positional vector                                         %
+% eta     : Input positional vector                                       %
 %                                                                         %
 % Created:      27.09.2023	Andreas Sitorus                               %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Get the angular velocity
-phi = eta(4,1);       % Rolling angle
-theta = eta(5,1);     % Pitching angle
-psi = eta(6,1);       % Yaw angle
+%% Get the orientation
+phi = eta_n(4,1);       % Rolling angle
+theta = eta_n(5,1);     % Pitching angle
+psi = eta_n(6,1);       % Yaw angle
 
 %% Linear Velocity Transformation Matrix
 % Element
@@ -33,10 +33,10 @@ r31 = -sin(theta);
 r32 = cos(theta) * sin(phi);
 r33 = cos(theta) * cos(phi);
 
-% Matrix
-R_Theta = [r11 r12 r13;
-           r21 r22 r23;
-           r31 r32 r33];
+% Rotation Matrix (from {b} to {n})
+R_Theta_nb = [r11 r12 r13;
+              r21 r22 r23;
+              r31 r32 r33];
 
 %% Angular Velocity Transformation Matrix
 % Element
@@ -50,13 +50,13 @@ t31 = 0;
 t32 = sin(phi) / cos(theta);
 t33 = cos(phi) / cos(theta);
 
-% Matrix
-T_Theta = [t11 t12 t13;
-           t21 t22 t23;
-           t31 t32 t33];
+% Angular Velocity Rotation Matrix (from {b} to {n})
+T_Theta_nb = [t11 t12 t13;
+              t21 t22 t23;
+              t31 t32 t33];
 
 %% Jacobian
-J_Theta = [R_Theta  zeros(3);
-           zeros(3) T_Theta];
+J_Theta_nb = [R_Theta_nb  zeros(3);
+           zeros(3) T_Theta_nb];
 
 end

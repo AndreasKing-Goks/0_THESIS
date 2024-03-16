@@ -53,20 +53,19 @@ Param = BlueROV2_param();
 Pos_N = Param.IC.Pos;
 Velo_B = Param.IC.Velo;
 
-%% Thruster Dynamics
+%% Thruster System
+% Thruster allocation
+T_alloc = Thrust_Allocation();
+lambda = 1e-3;
+T_alloc_ps = pinv(T_alloc' * T_alloc + lambda * eye(size(T_alloc, 2))) * T_alloc';
+
+% Thruster constraints
 upper_limit = 30;
 lower_limit = -upper_limit;
 thrust_rate = 5;
 
 %% Timestep
 dt = 0.1;  %-----To set
-
-%% Input Force in Body Frame
-Input_F = [0; 0; 0];       % Forces in x-axis, y-axis, and z-axis (Body Frame)
-F_Coord = [0; 0; 0];       % External forces exerted on the top of the sphere, in line with the center of gravity
-
-Ex_Force = Command_Force(Input_F, F_Coord);
-impulse_time = 0.001;
 
 %% Reference Model Parameters
 % Implement the pre-determined reference model for the controller
@@ -100,17 +99,17 @@ end
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
-% % Best heave only 
-% Kp = [15; 15; 19.5; 19.5; 19.5; 15];
-% Ki = [2.5; 2.5; 3.1; 3.1; 3.1; 2.5];
-% Kd = [30; 30; 36.1; 36.1; 36.1; 30];
+% % Best heave only/ thrust allocation not active
+% Kp = [1; 1; 750; 1; 1; 1];
+% Ki = [1; 1; 155; 1; 1; 1];
+% Kd = [1; 1; 70; 1; 1; 1];
 
-Kp = [1; 1; 19.5; 1; 1 ;1 ];
-Ki = [1; 1; 3.1; 1; 1; 1];
-Kd = [1; 1; 36.1; 1; 1; 1];
+Kp = [1; 1; 1; 1; 1; 1];
+Ki = [1; 1; 1; 1; 1; 1];
+Kd = [1; 1; 1; 1; 1; 1];
 
 %% Extended Kalman Filter Parameters
-[inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
+% [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
 
 %% Ballast Force
 % How to use:
