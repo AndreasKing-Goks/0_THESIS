@@ -77,7 +77,7 @@ dt = 0.1;  %-----To set
 Method = 2;
 
 % Cases selector
-Case = 1;
+Case = 3;
 
 % Define time check points
 % Note:
@@ -99,49 +99,40 @@ end
 set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
+% Initial set
+% Kp = [1; 1; 1; 1; 1; 1];
+% Ki = [1; 1; 1; 1; 1; 1];
+% Kd = [1; 1; 1; 1; 1; 1];
+
 % % Best heave only/ thrust allocation not active
 % Kp = [1; 1; 750; 1; 1; 1];
 % Ki = [1; 1; 155; 1; 1; 1];
 % Kd = [1; 1; 70; 1; 1; 1];
 
-% CP1 Heave case
-% Kp = [1; 60; 125; 80; 80; 1];
-% Ki = [1; 30; 80; 36; 36; 1];
-% Kd = [1; 15; 212; 15; 15; 1];
+% % Best roll only/ thrust allocation not active
+% Kp = [1; 100; 100; 100; 1; 1];
+% Ki = [1; 10; 10; 10; 1; 1];
+% Kd = [1; 20; 20; 10; 1; 1];
 
-% CP2 Heave case
-% Kp = [1; 45; 380; 45; 45; 1];
-% Ki = [1; 25; 110; 36; 36; 1];
-% Kd = [1; 15; 655; 15; 15; 1];
+% % Best heave only/ thrust allocation not active
+% Kp = [100; 100; 100; 100; 100; 1];
+% Ki = [10; 10; 10; 10; 10; 1];
+% Kd = [20; 20; 20; 10; 10; 1];
 
-% CP3 Heave case
-% Kp = [1; 45; 540; 75; 75; 1];
-% Ki = [1; 25; 70; 36; 36; 1];
-% Kd = [1; 15; 675; 45; 45; 1];
+% Best Heave case
+Kp = [255; 545; 7095; 2420; 2375; 1];
+Ki = [45; 45; 10; 96; 96; 1];
+Kd = [155; 355; 8985; 1205; 1205; 1];
 
-% CP4 Heave case
-% Kp = [1; 95; 785; 155; 155; 1];
-% Ki = [1; 25; 65; 76; 76; 1];
-% Kd = [1; 15; 1025; 105; 105; 1];
+% % Best Roll case
+% Kp = [1; 100; 100; 100; 200; 1];
+% Ki = [1; 20; 20; 80; 10; 1];
+% Kd = [1; 70; 70; 120; 100; 1];
 
-% CP5 Heave case
-% Kp = [1; 155; 865; 215; 215; 1];
-% Ki = [1; 55; 35; 86; 86; 1];
-% Kd = [1; 55; 1325; 135; 135; 1];
-
-% CP6 Heave case
-% Kp = [1; 255; 2345; 395; 395; 1];
-% Ki = [1; 45; 75; 46; 46; 1];
-% Kd = [1; 155; 3045; 265; 265; 1];
-
-% CP7 Heave case
-% Kp = [255; 545; 7145; 615; 515; 1];
-% Ki = [45; 45; 85; 96; 46; 1];
-% Kd = [155; 355; 8945; 1065; 565; 1];
-
-Kp = [255; 545; 7145; 825; 615; 1];
-Ki = [45; 45; 85; 106; 96; 1];
-Kd = [155; 355; 8945; 1065; 595; 1];
+% % Best Pitch case
+% Kp = [120; 120; 120; 200; 100; 1];
+% Ki = [30; 30; 30; 10; 80; 1];
+% Kd = [90; 90; 80; 100; 120; 1];
 
 %% Extended Kalman Filter Parameters
 % [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
