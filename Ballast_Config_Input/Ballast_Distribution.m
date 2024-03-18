@@ -34,49 +34,56 @@ for gen = 1:numGenerations
         gene = population(i,:);
         prompt = decoded_gene(gene);
         fitness(i, :) = objectiveFunction(prompt);
-        % fitness(i) = 1 / (objectiveFunction(prompt) + epsilon);
     end
 %% Selection (Tournament)
 % Tournament selection parameters
-tournamentSize = 3; 
-    
+    tournamentSize = 3; 
+
 % New generation
-newPopulation = zeros(size(population));
-for i = 1:popSize
+    newPopulation = zeros(size(population));
+    for i = 1:popSize
     % Select several genes via tournament selection and choose the best
     % gene. The best gene are the one with smallest fitness value
-    winnerIndex = Tournament_Selection(fitness, tournamentSize);
-    newPopulation(i,:) = population(winnerIndex,:);
-end
+        winnerIndex = Tournament_Selection(fitness, tournamentSize);
+        newPopulation(i,:) = population(winnerIndex,:);
+    end
 
 %% Crossover
-for i = 1:2:popSize
-    if rand <= crossoverRate
-        crossoverPoint = randi(numGenes-1);
-        newPopulation(i,:) = [newPopulation(i,1:crossoverPoint), newPopulation(i+1,crossoverPoint+1:end)];
-        newPopulation(i+1,:) = [newPopulation(i+1,1:crossoverPoint), newPopulation(i,crossoverPoint+1:end)];
-    end
-end
-
-%% Mutation
-for i = 1:popSize
-    for j = 1:numGenes
-        if rand <= mutationRate
-            newPopulation(i,j) = 1 - newPopulation(i,j);
+    for i = 1:2:popSize
+        if rand <= crossoverRate
+            crossoverPoint = randi(numGenes-1);
+            newPopulation(i,:) = [newPopulation(i,1:crossoverPoint), newPopulation(i+1,crossoverPoint+1:end)];
+            newPopulation(i+1,:) = [newPopulation(i+1,1:crossoverPoint), newPopulation(i,crossoverPoint+1:end)];
         end
     end
-end
+
+%% Mutation
+    for i = 1:popSize
+        for j = 1:numGenes
+            if rand <= mutationRate
+                newPopulation(i,j) = 1 - newPopulation(i,j);
+            end
+        end
+    end
 
 %% Finalization
-% Find and store the best fitness and corresponding x value
-[maxFitness, idx] = max(fitness);
-bestFitnessHistory(gen) = maxFitness;
-bestXHistory(gen,:) = decoded_gene(population(idx,:));
+% Final Evaluation
+    for i = 1:popSize
+        newGene = newPopulation(i,:);
+        newPrompt = decoded_gene(newGene);
+        fitness(i, :) = objectiveFunction(newPrompt);
+    end
+% Find and store the best fitness and corresponding the prompt
+    [optFitness, idx] = min(fitness);
+    bestFitnessHistory(gen) = optFitness;
+    bestXHistory(gen,:) = decoded_gene(newPopulation(idx,:));
+
+% Set altered population as the initial population for next generation
+    population = newPopulation;
     
 % disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness), ', Best Ballast Configuration = ', bestBallastConfigStr]);
-disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness)]);
+    disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(optFitness)]);
 end
-
 
 optimalPrompt = bestXHistory(end,:)
 optimalObj = objectiveFunction(prompt)
