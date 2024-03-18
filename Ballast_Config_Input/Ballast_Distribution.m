@@ -2,7 +2,7 @@ clear
 clc
 %% Initialization
 % Get the input
-g0 = [0; 0; 20; 0 ; 0; 0];
+g0 = [0; 0; 150; 0 ; 0; 0];
 
 % Population parameters
 popSize = 100;
@@ -14,25 +14,27 @@ num_wei = 2; % Maximum number of weights
 numGenerations = 100;
 crossoverRate = 0.7;
 mutationRate = 0.001;
-fitness = zeros(popSize, length(g0));
+fitness = zeros(popSize,1);
+epsilon = 1e-6;
 
 % Initialize population - encoded
 % population = randi([0 6], popSize, numGenes);
 population = generate_feasible_population(popSize, numGenes, num_flo, num_wei);
 
 % Objective function
-objectiveFunction = @(prompt) abs(g0 - Ballast_Objective(prompt));
+objectiveFunction = @(prompt) sum(abs(g0 - Ballast_Objective(prompt)));
 
 % Array to store best fitness in each generation
 bestFitnessHistory = zeros(numGenerations, 1);
-bestXHistory = zeros(numGenerations, 1);
+bestXHistory = cell(numGenerations, numGenes);
 
 for gen = 1:numGenerations
 %% Evaluation
     for i = 1:popSize
         gene = population(i,:);
         prompt = decoded_gene(gene);
-        fitness(i, :) = objectiveFunction(prompt);
+        % fitness(i, :) = objectiveFunction(prompt);
+        fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
     end
 %% Population (Encoded)
 
@@ -75,11 +77,16 @@ end
 % Find and store the best fitness and corresponding x value
 [maxFitness, idx] = max(fitness);
 bestFitnessHistory(gen) = maxFitness;
-bestXHistory(gen) = decode(population(idx,:));
+bestXHistory(gen,:) = decoded_gene(population(idx,:));
     
-disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness), ', x = ', num2str(decode(population(idx,:)))]);
-
+% disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness), ', Best Ballast Configuration = ', bestBallastConfigStr]);
+disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness)]);
 end
+
+
+optimalPrompt = bestXHistory(end,:);
+optimalObj = objectiveFunction(prompt)
+
 %% Test 1
 % % Array to store best fitness in each generation
 % bestFitnessHistory = zeros(numGenerations, 1);
