@@ -33,26 +33,20 @@ for gen = 1:numGenerations
     for i = 1:popSize
         gene = population(i,:);
         prompt = decoded_gene(gene);
-        % fitness(i, :) = objectiveFunction(prompt);
-        fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
+        fitness(i, :) = objectiveFunction(prompt);
+        % fitness(i) = 1 / (objectiveFunction(prompt) + epsilon);
     end
-%% Population (Encoded)
-
 %% Selection (Tournament)
-totalFitness = sum(fitness);
-probabilities = fitness / totalFitness;
-cumulativeProbabilities = cumsum(probabilities);
+% Tournament selection parameters
+tournamentSize = 3; 
     
 % New generation
 newPopulation = zeros(size(population));
 for i = 1:popSize
-    r = rand;
-    for j = 1:popSize
-        if r <= cumulativeProbabilities(j)
-            newPopulation(i,:) = population(j,:);
-            break;
-        end
-    end
+    % Select several genes via tournament selection and choose the best
+    % gene. The best gene are the one with smallest fitness value
+    winnerIndex = Tournament_Selection(fitness, tournamentSize);
+    newPopulation(i,:) = population(winnerIndex,:);
 end
 
 %% Crossover
@@ -84,10 +78,28 @@ disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness)]);
 end
 
 
-optimalPrompt = bestXHistory(end,:);
+optimalPrompt = bestXHistory(end,:)
 optimalObj = objectiveFunction(prompt)
 
 %% Test 1
+% %% Selection (Roulette)
+% totalFitness = sum(fitness);
+% probabilities = fitness / totalFitness;
+% cumulativeProbabilities = cumsum(probabilities);
+% 
+% % New generation
+% newPopulation = zeros(size(population));
+% for i = 1:popSize
+%     r = rand;
+%     for j = 1:popSize
+%         if r <= cumulativeProbabilities(j)
+%             newPopulation(i,:) = population(j,:);
+%             break;
+%         end
+%     end
+% end
+
+%% Test 2
 % % Array to store best fitness in each generation
 % bestFitnessHistory = zeros(numGenerations, 1);
 % bestXHistory = zeros(numGenerations, 1);
