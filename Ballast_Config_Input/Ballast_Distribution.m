@@ -2,7 +2,8 @@ clear
 clc
 %% Initialization
 % Get the input
-g0 = [0; 0; 120; 600 ; 0; 0];
+% g0 = [0; 0; -15; 2; 1.5; 0];
+g0 = [0; 0; -15; 0; 0; 0];
 
 % Population parameters
 popSize = 5000;
@@ -11,8 +12,8 @@ num_flo = 9; % Maximum number of floaters
 num_wei = 2; % Maximum number of weights
 
 % Genetic algorithm parameters
-numGenerations = 100;
-crossoverRate = 0.3;
+numGenerations = 30;
+crossoverRate = 0.7;
 mutationRate = 0.001;
 fitness = zeros(popSize,1);
 epsilon = 1e-6;
@@ -22,7 +23,7 @@ epsilon = 1e-6;
 population = generate_feasible_population(popSize, numGenes, num_flo, num_wei);
 
 % Objective function
-objectiveFunction = @(prompt) sum((g0 - Ballast_Objective(prompt).^2));
+objectiveFunction = @(prompt) sum((g0 - Ballast_Objective(prompt)).^2);
 
 % Array to store best fitness in each generation
 bestFitnessHistory = zeros(numGenerations, 1);
@@ -37,8 +38,8 @@ for gen = 1:numGenerations
     for i = 1:popSize
         gene = population(i,:);
         prompt = decoded_gene(gene);
-        fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
-        % fitness(i, :) = objectiveFunction(prompt);
+        % fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
+        fitness(i, :) = objectiveFunction(prompt);
     end
 %% Selection (Tournament)
 % Tournament selection parameters
@@ -95,7 +96,8 @@ for gen = 1:numGenerations
 end
 
 optimalPrompt = bestXHistory(end,:)
-optimalObj = objectiveFunction(prompt)
+optimalObj = objectiveFunction(optimalPrompt)
 
-best_config = Ballast_Configuration(prompt);
-residual = (g0 - Ballast_Term(best_config))
+best_config = Ballast_Configuration(optimalPrompt)
+best_ballast_term = Ballast_Term(best_config) 
+residual = (g0 - best_ballast_term)

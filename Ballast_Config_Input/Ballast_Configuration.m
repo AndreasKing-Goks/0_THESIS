@@ -49,9 +49,9 @@ Weight_M = M_Vol * s_steel;   % kg
 Weight_L = L_Vol * s_steel;   % kg
 
 % Available ballast amount
-N_Floater_S = 12;
-N_Floater_M = 12;
-N_Floater_L = 12;
+N_Floater_S = 9;
+N_Floater_M = 9;
+N_Floater_L = 9;
 
 N_Weight_S = 2;
 N_Weight_M = 2;
@@ -79,7 +79,7 @@ for i = 1:numel(prompt)
             ballast{4} = foam;
             N_Floater_S = N_Floater_S - 1;
         else
-            disp('The used number of Small Floater is maxed out.');
+            % disp('The used number of Small Floater is maxed out.');
             error = 1;
         end
     elseif strcmp(prompt{i}, 'FM')
@@ -90,7 +90,7 @@ for i = 1:numel(prompt)
             ballast{4} = foam;
             N_Floater_M = N_Floater_M - 1;
         else
-            disp('The used number of Medium Floater is maxed out.');
+            % disp('The used number of Medium Floater is maxed out.');
             error = 1;
         end
     elseif strcmp(prompt{i}, 'FL')
@@ -101,7 +101,7 @@ for i = 1:numel(prompt)
             ballast{4} = foam;
             N_Floater_L = N_Floater_L - 1;
         else
-            disp('The used number of Large Floater is maxed out.');
+            % disp('The used number of Large Floater is maxed out.');
             error = 1;
         end
     elseif strcmp(prompt{i}, 'WS')
@@ -112,7 +112,7 @@ for i = 1:numel(prompt)
             ballast{4} = -s_steel;
             N_Weight_S = N_Weight_S - 1;
         else
-            disp('The used number of Small Weight is maxed out.');
+            % disp('The used number of Small Weight is maxed out.');
             error = 1;
         end
     elseif strcmp(prompt{i}, 'WM')
@@ -123,7 +123,7 @@ for i = 1:numel(prompt)
             ballast{4} = -s_steel;
             N_Weight_M = N_Weight_M - 1;
         else
-            disp('The used number of Medium Weight is maxed out.');
+            % disp('The used number of Medium Weight is maxed out.');
             error = 1;
         end
     elseif strcmp(prompt{i}, 'WL')
@@ -134,7 +134,7 @@ for i = 1:numel(prompt)
             ballast{4} = -s_steel;
             N_Weight_L = N_Weight_L - 1;
         else
-            disp('The used number of Large Weight is maxed out.');
+            % disp('The used number of Large Weight is maxed out.');
             error = 1;
         end
     end
@@ -144,7 +144,7 @@ for i = 1:numel(prompt)
 
     if error == 1
         Ballast_Config = cell(1,9);
-        disp('[ABORT OPERATION]');
+        % disp('[ABORT OPERATION]');
         break
     end
 end
