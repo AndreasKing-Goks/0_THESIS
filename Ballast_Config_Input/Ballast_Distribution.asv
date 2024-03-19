@@ -2,7 +2,7 @@ clear
 clc
 %% Initialization
 % Get the input
-g0 = [0; 0; 120; 600 ; 0; 0];
+g0 = [0; 0; 120; 120 ; 0; 0];
 
 % Population parameters
 popSize = 5000;
@@ -11,8 +11,8 @@ num_flo = 9; % Maximum number of floaters
 num_wei = 2; % Maximum number of weights
 
 % Genetic algorithm parameters
-numGenerations = 100;
-crossoverRate = 0.3;
+numGenerations = 200;
+crossoverRate = 0.7;
 mutationRate = 0.001;
 fitness = zeros(popSize,1);
 epsilon = 1e-6;
@@ -22,7 +22,7 @@ epsilon = 1e-6;
 population = generate_feasible_population(popSize, numGenes, num_flo, num_wei);
 
 % Objective function
-objectiveFunction = @(prompt) sum((g0 - Ballast_Objective(prompt).^2));
+objectiveFunction = @(prompt) sum(abs(g0 - Ballast_Objective(prompt)));
 
 % Array to store best fitness in each generation
 bestFitnessHistory = zeros(numGenerations, 1);
@@ -37,8 +37,7 @@ for gen = 1:numGenerations
     for i = 1:popSize
         gene = population(i,:);
         prompt = decoded_gene(gene);
-        fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
-        % fitness(i, :) = objectiveFunction(prompt);
+        fitness(i, :) = objectiveFunction(prompt);
     end
 %% Selection (Tournament)
 % Tournament selection parameters
