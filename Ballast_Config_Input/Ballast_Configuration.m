@@ -18,15 +18,15 @@ ballast_posZ = {Param_B.z_f Param_B.z_f Param_B.z_f Param_B.z_w};
 % Create the container
 Ballast_Config = cell(1,(Param_B.num_floater + Param_B.num_weight));
 
+% Error tag if maximum ballast amount reached.
+max_ballast = 0;
+
 % Check prompt
 for i = 1:numel(prompt)
     % If hook is unassigned, skip it
     if strcmp(prompt{i}, 'FN') || strcmp(prompt{i}, 'WN')
         continue
     end
-
-    % Error tag if maximum ballast amount reached.
-    max_ballast = 0;
 
     % Sort the strings
     ballast = cell(1,4);

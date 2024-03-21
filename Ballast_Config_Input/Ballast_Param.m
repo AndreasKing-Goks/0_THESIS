@@ -38,7 +38,7 @@ g = 9.81;                                   % m.s-2
 rho_f = 192;                                % kg.m-3
 rho_w = 1000;                               % kg.m-3
 
-sect_area= 0.25^2;                          % m2
+sect_area= 0.025*0.025;                          % m2
 
 Vol_S = sect_area * 0.04;                   % m3
 Vol_M = sect_area * 0.06;                   % m3

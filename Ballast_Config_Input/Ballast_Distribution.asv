@@ -16,7 +16,7 @@ max_w = 8;
 penalty = 1e50;     % If the ballasts usage reached the allowed amount
 
 % Population parameters
-pop_size = 100;
+pop_size = 5000;
 num_floater= Param_B.num_floater;
 num_weight= Param_B.num_weight;
 num_genes = (num_floater * 2) + num_weight;
@@ -27,7 +27,7 @@ funargs = {max_f_s, max_f_m, max_f_l, max_w};
 ofunargs = [{g0} {penalty} {funargs}];
 
 % Genetic algorithm parameters
-num_generations = 30;
+num_generations = 100;
 crossover_rate = 0.7;
 mutation_rate = 0.01;
 fitness = zeros(pop_size,1);
@@ -94,7 +94,6 @@ for gen = 1:num_generations
 % fitness history
     [opt_fitness, idx] = min(fitness);
     best_fitness_history(gen) = opt_fitness;
-    x = new_population(idx,:);
     best_prompt_history(gen,:) = Decoded_Gene(new_population(idx,:), num_floater, num_weight);
     fitness_history{gen} = fitness;
 
@@ -109,13 +108,25 @@ end
 
 %% Results
 % Optimal prompt
-opt_obj_val = best_fitness_history(end,:)
-opt_prompt = best_prompt_history(end,:)
+% opt_obj_val = best_fitness_history(end,:)
+% opt_prompt = best_prompt_history(end,:);
+opt_obj_val = best_fitness_history
+opt_prompt = best_prompt_history(end,:);
 
 % Optimal ballast config
-best_ballast_config = Ballast_Configuration(opt_prompt, funargs)
+best_ballast_config = Ballast_Configuration(opt_prompt, funargs);
+front_ballast_config = opt_prompt{1:10}
+middle_ballast_config = opt_prompt{11:20}
+aft_ballast_config = opt_prompt{21:30}
 
 % Check final ballast term and the residual
-g
-best_ballast_term = Ballast_Compute(best_ballast_config) 
-residual = (g0 - best_ballast_term)
+g_opt = Ballast_Compute(best_ballast_config);
+residual = (g0 - best_ballast_term);
+
+% Header
+disp('          g0         g_opt       residual');
+
+% Data rows
+disp(['Z    ', sprintf('%0.4f    %0.4f    %0.4f', g0(3), g_opt(3), residual(3))]);
+disp(['K    ', sprintf('%0.4f    %0.4f    %0.4f', g0(4), g_opt(4), residual(4))]);
+disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]);
