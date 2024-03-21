@@ -12,7 +12,9 @@ g_obj = Ballast_Compute(Ballast_Config);
 
 objective = g0 - g_obj;
 
-objective_val = objective' * objective;
+% objective_val = objective' * objective;
+
+objective_val = sum(abs(objective));
 
 % Add penalty if max ballast usage is reached
 if max_ballast == 1

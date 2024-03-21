@@ -6,7 +6,7 @@ global Param_B
 Param_B = Ballast_Param();
 
 % Get the input
-g0 = [0; 0; -.1; .01; .01; 0];
+g0 = [0; 0; -7; 2; 1; 0];
 
 % Ballast configuration parameters
 max_f_s = 30;
@@ -28,8 +28,8 @@ ofunargs = [{g0} {penalty} {funargs}];
 
 % Genetic algorithm parameters
 num_generations = 150;
-crossover_rate = 0.5;
-mutation_rate = 0.001;
+crossover_rate = 0.7;
+mutation_rate = 0.01;
 fitness = zeros(pop_size,1);
 
 % Initialize population - encoded
@@ -102,17 +102,37 @@ for gen = 1:num_generations
     population = new_population;
     population_history{gen} = population;
     
+%% Display progress    
 % disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness), ', Best Ballast Configuration = ', bestBallastConfigStr]);
     disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(opt_fitness)]);
+
+%% Convergence check (Stall check)
+    % Parameters for stall generations criteria
+    stall_generations_limit = 10; % Number of generations without improvement to tolerate
+    best_fitness_stall = inf; % Initialize with a very high value
+    stall_counter = 0; % Initialize stall counter
+
+    if opt_fitness < best_fitness_stall
+        best_fitness_stall = opt_fitness;
+        stall_counter = 0; % Reset stall counter
+    else
+        stall_counter = stall_counter + 1;
+    end
+
+    % Check for stall
+    if stall_counter >= stall_generations_limit
+        disp(['No improvement for ', num2str(stall_generations_limit), ' generations.']);
+        break; % Exit the loop
+    end
 end
 
 %% Results
 % Optimal prompt
-opt_obj_val = best_fitness_history(end,:)
-opt_prompt = best_prompt_history(end,:);
-% opt_obj_val = min(best_fitness_history)
-% opt_idx = find(best_fitness_history == opt_obj_val);
-% opt_prompt = best_prompt_history(opt_idx(1),:);
+% opt_obj_val = best_fitness_history(end,:)
+% opt_prompt = best_prompt_history(end,:);
+opt_obj_val = min(best_fitness_history)
+opt_idx = find(best_fitness_history == opt_obj_val);
+opt_prompt = best_prompt_history(opt_idx(1),:);
 
 % Optimal ballast config
 best_ballast_config = Ballast_Configuration(opt_prompt, funargs);
@@ -126,7 +146,7 @@ g_opt = Ballast_Compute(best_ballast_config);
 residual = (g0 - g_opt);
 
 % Header
-disp('          g0         g_opt       residual');
+disp('        g0       g_opt    residual');
 
 % Data rows
 disp(['Z    ', sprintf('%0.4f    %0.4f    %0.4f', g0(3), g_opt(3), residual(3))]);
