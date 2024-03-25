@@ -8,9 +8,9 @@ for i = 1:numel(Ballast_Config)
     % if iscell(Ballast_Config{i}) && ~isempty(Ballast_Config{i}) && Ballast_Config{i}{1} ~= 0
     if ~isempty(Ballast_Config{i})
         % Unpack
-        x = Ballast_Config{i}{1}{1};
-        y = Ballast_Config{i}{2}{1};
-        z = Ballast_Config{i}{3}{1};
+        x = Ballast_Config{i}{1};
+        y = Ballast_Config{i}{2};
+        z = Ballast_Config{i}{3};
         F = Ballast_Config{i}{4};
 
         % Compute

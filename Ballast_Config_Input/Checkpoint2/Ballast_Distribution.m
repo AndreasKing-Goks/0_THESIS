@@ -6,36 +6,31 @@ global Param_B
 Param_B = Ballast_Param();
 
 % Get the input
-g0 = [0; 0; -5.1; 0; 0; 0];
+g0 = [0; 0; -7; 2; 1; 0];
 
 % Ballast configuration parameters
-max_f = 24;
+max_f_s = 30;
+max_f_m = 30;
+max_f_l = 30;
 max_w = 8;
 penalty = 1e50;     % If the ballasts usage reached the allowed amount
 
 % Population parameters
 pop_size = 5000;
-num_hook_floater= Param_B.num_hook_floater;
-num_hook_weight= Param_B.num_hook_weight;
-num_floater = num_hook_floater * 3;
-num_weight = num_hook_weight;
-num_genes = num_floater + num_weight;
-num_prompt = num_hook_floater + num_hook_weight;
+num_floater= Param_B.num_floater;
+num_weight= Param_B.num_weight;
+num_genes = (num_floater * 2) + num_weight;
+num_prompt = num_floater + num_weight;
 
 % Create function argument
-funargs = {max_f max_w};
+funargs = {max_f_s, max_f_m, max_f_l, max_w};
 ofunargs = [{g0} {penalty} {funargs}];
 
 % Genetic algorithm parameters
 num_generations = 150;
 crossover_rate = 0.7;
-mutation_rate = 0.005;
+mutation_rate = 0.01;
 fitness = zeros(pop_size,1);
-
-% Parameters for stall generations criteria
-stall_generations_limit = 15; % Number of generations without improvement to tolerate
-stall_counter = 0; % Initialize stall counter
-best_fitness_stall = inf; % Initialize with a very high value
 
 % Initialize population - encoded
 population = randi([0 1], pop_size, num_genes);
@@ -53,7 +48,7 @@ for gen = 1:num_generations
 %% Evaluation
     for i = 1:pop_size
         gene = population(i,:);
-        prompt = Decoded_Gene(gene, num_hook_floater, num_hook_weight);
+        prompt = Decoded_Gene(gene, num_floater, num_weight);
         % fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
         fitness(i, :) = Ballast_Objective(prompt, ofunargs);
     end
@@ -92,14 +87,14 @@ for gen = 1:num_generations
 % Final Evaluation
     for i = 1:pop_size
         new_gene = new_population(i,:);
-        new_prompt = Decoded_Gene(new_gene, num_hook_floater, num_hook_weight);
+        new_prompt = Decoded_Gene(new_gene, num_floater, num_weight);
         fitness(i, :) = Ballast_Objective(prompt, ofunargs);
     end
 % Find and store the best fitness and corresponding the prompt, track
 % fitness history
     [opt_fitness, idx] = min(fitness);
     best_fitness_history(gen) = opt_fitness;
-    best_prompt_history(gen,:) = Decoded_Gene(new_population(idx,:), num_hook_floater, num_hook_weight);
+    best_prompt_history(gen,:) = Decoded_Gene(new_population(idx,:), num_floater, num_weight);
     fitness_history{gen} = fitness;
 
 % Set altered population as the initial population for next generation,
@@ -112,6 +107,11 @@ for gen = 1:num_generations
     disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(opt_fitness)]);
 
 %% Convergence check (Stall check)
+    % Parameters for stall generations criteria
+    stall_generations_limit = 10; % Number of generations without improvement to tolerate
+    best_fitness_stall = inf; % Initialize with a very high value
+    stall_counter = 0; % Initialize stall counter
+
     if opt_fitness < best_fitness_stall
         best_fitness_stall = opt_fitness;
         stall_counter = 0; % Reset stall counter
@@ -127,27 +127,19 @@ for gen = 1:num_generations
 end
 
 %% Results
-% Find the last non zero optimal value and prompt
-last_nz_index = find(best_fitness_history, 1, 'last'); % Finds the last non-zero element's index
-if ~isempty(last_nz_index)
-    % Retrieves the value
-    opt_obj_val = best_fitness_history(last_nz_index); 
-    opt_prompt = best_prompt_history(last_nz_index,:);
-else
-    % In case best_fitness_history is all zeros, handle accordingly
-    opt_obj_val = [];  
-    opt_prompt = [];
-end
-
-
-% opt_obj_val = min(best_fitness_history)
-% opt_idx = find(best_fitness_history == opt_obj_val);
-% opt_prompt = best_prompt_history(opt_idx(1),:);
+% Optimal prompt
+% opt_obj_val = best_fitness_history(end,:)
+% opt_prompt = best_prompt_history(end,:);
+opt_obj_val = min(best_fitness_history)
+opt_idx = find(best_fitness_history == opt_obj_val);
+opt_prompt = best_prompt_history(opt_idx(1),:);
 
 % Optimal ballast config
 best_ballast_config = Ballast_Configuration(opt_prompt, funargs);
-floaters_config = opt_prompt(1:8)
-weights_config = opt_prompt(9:end)
+front_floaters_config = opt_prompt(1:10)
+middle_floaters_config = opt_prompt(11:20)
+aft_floaters_config = opt_prompt(21:30)
+weights_config = opt_prompt(31:end)
 
 % Check final ballast term and the residual
 g_opt = Ballast_Compute(best_ballast_config);
