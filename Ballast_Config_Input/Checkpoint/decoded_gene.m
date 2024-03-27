@@ -1,4 +1,4 @@
-function prompt = decoded_gene(gene)
+function prompt = Decoded_Gene(gene)
 % Ballast Code [dtype=string | 0 means unassigned]:
 % -"FS" - Small Floater = 1
 % -"FM" - Medium Floater = 2
@@ -21,5 +21,4 @@ for i = 1:length(gene)
         end
     end
 end
-
 end
