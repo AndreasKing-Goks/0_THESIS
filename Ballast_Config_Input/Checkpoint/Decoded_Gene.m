@@ -21,5 +21,4 @@ for i = 1:length(gene)
         end
     end
 end
-
 end
