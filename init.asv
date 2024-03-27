@@ -155,11 +155,6 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % Location Desctription
 % F : Front
 % A : Aft (Back)
-% R : Right
-% L : Left
-% M : Middle
-% I : Inner
-% O : Outer
 
 % Floaters Prompt
 % Location : FR    FL    AR    AL    IMR   IML   OMR   OML
@@ -172,12 +167,12 @@ prompt = [f_prompt w_prompt];
 % Other function arguments
 max_f = 24;
 max_w = 8;
+
 funargs = {max_f max_w};
 
-% Get the ballast configuration
 Ballast_Config = Ballast_Configuration(prompt, funargs);
 
-% Compute the ballast force
+%Ballast_Force = zeros(6,1);
 Ballast_Force = Ballast_Compute(Ballast_Config);
 
 %% Thruster Force
