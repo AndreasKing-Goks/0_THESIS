@@ -34,7 +34,7 @@ mutation_rate = 0.005;
 fitness = zeros(pop_size,1);
 
 % Parameters for stall generations criteria
-stall_generations_limit = 15; % Number of generations without improvement to tolerate
+stall_generations_limit = 10; % Number of generations without improvement to tolerate
 stall_counter = 0; % Initialize stall counter
 best_fitness_stall = inf; % Initialize with a very high value
 
@@ -134,12 +134,12 @@ end
 % Get all the non-zero elements
 nz_best_fitness_history = best_fitness_history(best_fitness_history ~= 0);
 
-% Find the minimum of the non zero best fitness history
+% Find the minimum of non zero best fitness history
 min_nz_best_fitness_history = min(nz_best_fitness_history);
 
-% Get the index of the minimum value
+% Get the index 
 last_nz_index = find(best_fitness_history == min_nz_best_fitness_history, ...
-    1, 'last'); % Finds the last minimum and non-zero fitness's index
+    1, 'first'); % Finds the last non-zero element's index
 
 % Evaluate the best value
 if ~isempty(last_nz_index)

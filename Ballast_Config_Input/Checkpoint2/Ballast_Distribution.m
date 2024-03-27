@@ -6,37 +6,31 @@ global Param_B
 Param_B = Ballast_Param();
 
 % Get the input
-% g0 = [0; 0; -5.1; 0; 0; 0];
-g0 = [0; 0; 5.1; 0; 0; 0];
+g0 = [0; 0; -7; 2; 1; 0];
 
 % Ballast configuration parameters
-max_f = 24;
+max_f_s = 30;
+max_f_m = 30;
+max_f_l = 30;
 max_w = 8;
 penalty = 1e50;     % If the ballasts usage reached the allowed amount
 
 % Population parameters
 pop_size = 5000;
-num_hook_floater= Param_B.num_hook_floater;
-num_hook_weight= Param_B.num_hook_weight;
-num_floater = num_hook_floater * 3;
-num_weight = num_hook_weight;
-num_genes = num_floater + num_weight;
-num_prompt = num_hook_floater + num_hook_weight;
+num_floater= Param_B.num_floater;
+num_weight= Param_B.num_weight;
+num_genes = (num_floater * 2) + num_weight;
+num_prompt = num_floater + num_weight;
 
 % Create function argument
-funargs = {max_f max_w};
+funargs = {max_f_s, max_f_m, max_f_l, max_w};
 ofunargs = [{g0} {penalty} {funargs}];
 
 % Genetic algorithm parameters
 num_generations = 150;
 crossover_rate = 0.7;
-mutation_rate = 0.005;
+mutation_rate = 0.01;
 fitness = zeros(pop_size,1);
-
-% Parameters for stall generations criteria
-stall_generations_limit = 15; % Number of generations without improvement to tolerate
-stall_counter = 0; % Initialize stall counter
-best_fitness_stall = inf; % Initialize with a very high value
 
 % Initialize population - encoded
 population = randi([0 1], pop_size, num_genes);
@@ -54,7 +48,7 @@ for gen = 1:num_generations
 %% Evaluation
     for i = 1:pop_size
         gene = population(i,:);
-        prompt = Decoded_Gene(gene, num_hook_floater, num_hook_weight);
+        prompt = Decoded_Gene(gene, num_floater, num_weight);
         % fitness(i, :) = 1 / (objectiveFunction(prompt) + epsilon);
         fitness(i, :) = Ballast_Objective(prompt, ofunargs);
     end
@@ -93,15 +87,14 @@ for gen = 1:num_generations
 % Final Evaluation
     for i = 1:pop_size
         new_gene = new_population(i,:);
-        new_prompt = Decoded_Gene(new_gene, num_hook_floater, num_hook_weight);
+        new_prompt = Decoded_Gene(new_gene, num_floater, num_weight);
         fitness(i, :) = Ballast_Objective(prompt, ofunargs);
     end
 % Find and store the best fitness and corresponding the prompt, track
 % fitness history
-    [best_fitness, idx] = min(fitness);
-    best_fitness_history(gen) = best_fitness;
-    best_prompt = Decoded_Gene(new_population(idx,:), num_hook_floater, num_hook_weight);
-    best_prompt_history(gen,:) = best_prompt;
+    [opt_fitness, idx] = min(fitness);
+    best_fitness_history(gen) = opt_fitness;
+    best_prompt_history(gen,:) = Decoded_Gene(new_population(idx,:), num_floater, num_weight);
     fitness_history{gen} = fitness;
 
 % Set altered population as the initial population for next generation,
@@ -111,52 +104,42 @@ for gen = 1:num_generations
     
 %% Display progress    
 % disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(maxFitness), ', Best Ballast Configuration = ', bestBallastConfigStr]);
-    disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(best_fitness)]);
+    disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(opt_fitness)]);
 
 %% Convergence check (Stall check)
-    if best_fitness < best_fitness_stall
-        best_fitness_stall = best_fitness;
-        best_prompt_stall = best_prompt;
+    % Parameters for stall generations criteria
+    stall_generations_limit = 10; % Number of generations without improvement to tolerate
+    best_fitness_stall = inf; % Initialize with a very high value
+    stall_counter = 0; % Initialize stall counter
+
+    if opt_fitness < best_fitness_stall
+        best_fitness_stall = opt_fitness;
         stall_counter = 0; % Reset stall counter
-    elseif best_fitness == best_fitness_stall
+    else
         stall_counter = stall_counter + 1;
     end
 
     % Check for stall
-    stall = stall_counter >= stall_generations_limit;
-    if stall
+    if stall_counter >= stall_generations_limit
         disp(['No improvement for ', num2str(stall_generations_limit), ' generations.']);
         break; % Exit the loop
     end
 end
 
 %% Results
-% Get all the non-zero elements
-nz_best_fitness_history = best_fitness_history(best_fitness_history ~= 0);
-
-% Find the minimum of the non zero best fitness history
-min_nz_best_fitness_history = min(nz_best_fitness_history);
-
-% Get the index of the minimum value
-last_nz_index = find(best_fitness_history == min_nz_best_fitness_history, ...
-    1, 'last'); % Finds the last minimum and non-zero fitness's index
-
-% Evaluate the best value
-if ~isempty(last_nz_index)
-    % Retrieves the value
-    opt_obj_val = best_fitness_history(last_nz_index)
-    opt_prompt = best_prompt_history(last_nz_index,:);
-else
-    % In case best_fitness_history is all zeros, handle accordingly
-    opt_obj_val = []  
-    opt_prompt = [];
-end
-
+% Optimal prompt
+% opt_obj_val = best_fitness_history(end,:)
+% opt_prompt = best_prompt_history(end,:);
+opt_obj_val = min(best_fitness_history)
+opt_idx = find(best_fitness_history == opt_obj_val);
+opt_prompt = best_prompt_history(opt_idx(1),:);
 
 % Optimal ballast config
 best_ballast_config = Ballast_Configuration(opt_prompt, funargs);
-floaters_config = opt_prompt(1:8)
-weights_config = opt_prompt(9:end)
+front_floaters_config = opt_prompt(1:10)
+middle_floaters_config = opt_prompt(11:20)
+aft_floaters_config = opt_prompt(21:30)
+weights_config = opt_prompt(31:end)
 
 % Check final ballast term and the residual
 g_opt = Ballast_Compute(best_ballast_config);
@@ -169,23 +152,3 @@ disp('        g0       g_opt    residual');
 disp(['Z    ', sprintf('%0.4f    %0.4f    %0.4f', g0(3), g_opt(3), residual(3))]);
 disp(['K    ', sprintf('%0.4f    %0.4f    %0.4f', g0(4), g_opt(4), residual(4))]);
 disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]);
-
-%% UNUSED
-% Find the last non zero optimal value and prompt
-% % If the solution converges
-% if stall
-%     opt_obj_val = best_fitness_stall 
-%     opt_prompt = best_prompt_stall;
-% % If the solution is not converges
-% else
-%     last_nz_index = find(best_fitness_history, 1, 'last'); % Finds the last non-zero element's index
-%     if ~isempty(last_nz_index)
-%         % Retrieves the value
-%         opt_obj_val = best_fitness_history(last_nz_index)
-%         opt_prompt = best_prompt_history(last_nz_index,:);
-%     else
-%         % In case best_fitness_history is all zeros, handle accordingly
-%         opt_obj_val = []
-%         opt_prompt = [];
-%     end
-% end
