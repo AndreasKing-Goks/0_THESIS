@@ -77,7 +77,7 @@ dt = 0.1;  %-----To set
 Method = 2;
 
 % Cases selector
-Case = 3;
+Case = 1;
 
 % Define time check points
 % Note:
@@ -138,23 +138,35 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
 
 %% Ballast Force
-% How to use:
-% Each element in the cell indicates the hook number.
-% Assign the "Ballast Code" to the cell's element to attach the ballast.
-% Ballast Code [dtype=string | 0 means unassigned]:
-% -"FS" - Small Floater
-% -"FM" - Medium Floater
-% -"FL" - Large Floater
-% -"WS" - Small Weight
-% -"WM" - Medium Weight
-% -"WL" - Large Weight 
+% Floater Code [dtype=string] - 3 bits system:
+% -'NNN' - None None None           - [0 0 0]
+% -'NNF' - None None Floater        - [0 0 1]
+% -'NFN' - None Floater None        - [0 1 0]
+% -'FNN' - Floater None None        - [1 0 0]
+% -'NFF' - None Floater Floater     - [0 1 1]
+% -'FFN' - Floater Floater None     - [1 1 0]
+% -'FNF' - Floater None Floater     - [1 0 1]
+% -'FFF' - Floater Floater Floater  - [1 1 1]
+% Weight Code [dtype=string] - 1 bit system:
+% -'WN' - No Weight = 0
+% -'WA' - Weight Available = 1
 
-prompt = {0 0 0 'FS' 'FS' 0 0 0 0};
+% Ballast_Configuration parameters
+% Prompt
+f_prompt = {'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN'};
+w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
+prompt = [f_prompt w_prompt];
 
-Ballast_Config = Ballast_Configuration(prompt);
+% Other function arguments
+max_f = 24;
+max_w = 8;
+
+funargs = {max_f max_w};
+
+Ballast_Config = Ballast_Configuration(prompt, funargs);
 
 %Ballast_Force = zeros(6,1);
-Ballast_Force = Ballast_Term(Ballast_Config);
+Ballast_Force = Ballast_Compute(Ballast_Config);
 
 %% Thruster Force
 Thruster_Force = zeros(6,1);
