@@ -1,9 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% init                                                                    %
+% init_NIF                                                                %
 %                                                                         %
 % Initialize workspace                                                    %
 %                                                                         %
-% Created:      13.02.2024	Andreas Sitorus                               %
+% Created:      28.03.2024	Andreas Sitorus                               %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
@@ -32,10 +32,10 @@ addpath(fullfile(currentDir, 'Save_and_Plot'));
 
 %% Open Simulink Model
 % Correct modelName to exclude the file extension for bdIsLoaded
-modelName = 'BlueROV2_Exp_Simu';
+modelName = 'BlueROV2_Exp_Simu_NIF';
 
 % Use the full file name including extension with open_system
-modelFileName = 'BlueROV2_Exp_Simu.slx';
+modelFileName = 'BlueROV2_Exp_Simu_NIF.slx';
 
 % Checking if the model is already loaded to avoid loading it again
 if ~bdIsLoaded(modelName)
