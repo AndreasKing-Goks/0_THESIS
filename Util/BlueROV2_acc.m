@@ -152,8 +152,8 @@ Xu_nl = 141.0;  % N.s2/m2
 Yv_nl = 217.0;  % N.s2/m2
 Zw_nl = 190.0;  % N.s2/m2
 Kp_nl = 1.192;   % N.s2/m2
-Mq_nl = 0.47;   % N.s2/m2
-Nr_nl = 1.50;   % N.s2/m2
+Mq_nl = 0.470;   % N.s2/m2
+Nr_nl = 1.500;   % N.s2/m2
 
 Param.NL_Damping_Coeff = [Xu_nl Yv_nl Zw_nl Kp_nl Mq_nl Nr_nl];
 

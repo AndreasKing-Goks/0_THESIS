@@ -83,6 +83,29 @@ Param.Ma = -diag(Param.AM);
 
 Param.Ma_o = Transform(Param.Ma,Param.CB.rb_o);
 
+%% Damping Coefficient
+% Linear Damping Coefficient
+Xu_l = 13.7;    % N.s/m
+Yv_l = 0;       % N.s/m
+Zw_l = 33.0;    % N.s/m
+Kp_l = 0;       % N.s/m
+Mq_l = 0.8;     % N.s/m
+Nr_l = 0;       % N.s/m
+
+% Linear Damping Matrix
+Param.K_l = [Xu_l Yv_l Zw_l Kp_l Mq_l Nr_l];
+
+% Nonlinear Damping Coefficient
+Xu_nl = 141.0;  % N.s2/m2
+Yv_nl = 217.0;  % N.s2/m2
+Zw_nl = 190.0;  % N.s2/m2
+Kp_nl = 1.192;  % N.s2/m2
+Mq_nl = 0.470;  % N.s2/m2
+Nr_nl = 1.500;  % N.s2/m2
+
+% Nonlinear Damping Matrix
+Param.K_nl = [Xu_nl Yv_nl Zw_nl Kp_nl Mq_nl Nr_nl];
+
 %% Generalized Mass Matrix
 Param.MT = Param.Mrb_o - Param.Ma_o;
 Param.inv_MT = inv(Param.MT);

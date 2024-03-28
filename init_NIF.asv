@@ -55,8 +55,8 @@ Param_B = Ballast_Param();
 % NIF Parameters
 Param_NIF.AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];   % Added Mass
 Param_NIF.K_l = [13.7, 0, 33.0, 0, 0.8, 0];                         % Linear Damping Coefficient
-Param_NIF.K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];        % Nonlinear Damping Coefficient
-Param_NIF.Ballast_Force = [0; 0; 0; 0; 0; 0];                                  % Ballast Term
+Param_NIG.K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];        % Nonlinear Damping Coefficient
+Param_NIF.g0 = [0, 0, 0, 0, 0, 0]
 
 %% Initial Condition
 % States
@@ -189,6 +189,9 @@ Ballast_Force = Ballast_Compute(Ballast_Config);
 
 %% Thruster Force
 Thruster_Force = zeros(6,1);
+
+%% Environment Force
+Env_Force = zeros(6,1);
 
 %% Tether Force
 Tether_Force = zeros(6,1);
