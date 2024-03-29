@@ -197,15 +197,15 @@ set_param('BlueROV2_Exp_Simu_NIF', 'StopTime', num2str(stop_time));
 % Get the estimation variables
 % NIF Parameters
 % % Initial and ground truth condition
-% AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
-% K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
-% K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
-% Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
-
-AM = [5.3567, 5.1206, 5.6863, 0.3858, 0.2348, 0.1215];      % Added Mass
+AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
 K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
 K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
 Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
+
+% AM = [1, 1, 1, 1, 1, 1];      % Added Mass
+% K_l = [1, 1, 1, 1, 1, 1];                           % Linear Damping Coefficient
+% K_nl = [1, 1, 1, 1, 1, 1];          % Nonlinear Damping Coefficient
+% Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
 
 % INPUT
 Estimation_Var = [AM K_l K_nl Ballast_Force'];              % Estimation variables
@@ -236,3 +236,32 @@ Est_g0 = Est_Var(19:24)
 % % Get the velocity data from the simulation
 % Result_NIF.Velo_Mea = simOut.Est_Velo_B_S;
 % Result_NIF.Velo_Est = simOut.Velo_B_S;
+
+% % Choose the parameter index you want to sweep
+% param_index = 1; % As an example, vary the first parameter
+% min_value = 0.1; % Define the minimum value of the sweep range
+% max_value = 10; % Define the maximum value of the sweep range
+% number_of_points = 100; % Number of points in the sweep
+% 
+% % Preallocate the sweep values
+% param_sweep = linspace(min_value, max_value, number_of_points);
+% Obj_Val_sweep = zeros(1, number_of_points);
+% 
+% % Keep other parameters fixed at their initial values
+% fixed_params = Estimation_Var;
+% 
+% % Sweep across the parameter range
+% for i = 1:number_of_points
+%     % Update only the parameter you're sweeping
+%     Estimation_Var(param_index) = param_sweep(i);
+% 
+%     % Evaluate the objective function
+%     Obj_Val_sweep(i) = Objective_Function(Estimation_Var, mode);
+% end
+% 
+% % Plot the results
+% figure;
+% plot(param_sweep, Obj_Val_sweep);
+% xlabel(sprintf('Parameter %d Value', param_index));
+% ylabel('Objective Function Value');
+% title(sprintf('Objective Function Sweep for Parameter %d', param_index));
