@@ -1,5 +1,17 @@
-function Obj_Val = Objective_Function(Estimation_Var)
+function Obj_Val = Objective_Function(Estimation_Var, mode)
 global Param_NIF
+%% Get the mode of objective function
+% To optimize heave parameters
+if strcmp(mode, 'heave')
+    data = 3;
+elseif strcmp(mode, 'roll')
+    data = 4;
+elseif strcmp(mode, 'pitch')
+    data = 5;
+else
+    error('Mode selection is not supported. Stopping script.');
+end
+
 %% Get data from simulink
 % Get the optimization variables
 Param_NIF.AM = Estimation_Var(1:6);
@@ -26,10 +38,10 @@ set_param([ballastBlockPath '/Ballast'], 'After', mat2str(Param_NIF.Ballast_Forc
 simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
 
 % Get the Velo_Mea
-Velo_Mea = simOut.Est_Velo_B_S;
+Velo_Mea = squeeze(simOut.Est_Velo_B_S(data,:,:));
 
 % Get the Velo_Est
-Velo_Est = simOut.Velo_B_S;
+Velo_Est = squeeze(simOut.Velo_B_S(data,:,:));
 
 %% Convergence coefficient
 G_delta = 100;

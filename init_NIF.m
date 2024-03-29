@@ -99,7 +99,7 @@ if Method == 1
 elseif Method == 2
     [Af, Omega, Gamma, X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = RM_param_AGF(Case, idle_time, stop_time);
 else
-    error('Method selection is not available. Stopping script.');
+    error('Method selection is not supported. Stopping script.');
 end
 
 %% Controller Model Parameters (PID)
@@ -196,19 +196,43 @@ set_param('BlueROV2_Exp_Simu_NIF', 'StopTime', num2str(stop_time));
 
 % Get the estimation variables
 % NIF Parameters
-AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];   % Added Mass
-K_l = [13.7, 0, 33.0, 0, 0.8, 0];                         % Linear Damping Coefficient
-K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];        % Nonlinear Damping Coefficient
-Ballast_Force = [0; 0; 0; 0; 0; 0];                       % Ballast Term
+% % Initial and ground truth condition
+% AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
+% K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
+% K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
+% Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
 
-Estimation_Var = [AM K_l K_nl Ballast_Force'];
+AM = [5.3567, 5.1206, 5.6863, 0.3858, 0.2348, 0.1215];      % Added Mass
+K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
+K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
+Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
 
+% INPUT
+Estimation_Var = [AM K_l K_nl Ballast_Force'];              % Estimation variables
+
+% Set the mode of the objective function
+% Available mode: 'heave', 'roll', 'pitch'
+mode = 'heave';
+
+% Set pseudo function of the objective function
+obj_func = @(var) Objective_Function(Estimation_Var, mode);
+
+% % Compute the objective function
+% Obj_Val = obj_func(Estimation_Var)
+
+% Run NIF
+[Est_Var, Obj_Val] = NIF(obj_func, Estimation_Var);
+
+%% Display Results
+Est_AM = Est_Var(1:6)
+Est_K_l = Est_Var(7:12)
+Est_K_nl = Est_Var(13:18)
+Est_g0 = Est_Var(19:24)
+
+%% NOT USED
 % % Run the Simulink model
 % simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
 
 % % Get the velocity data from the simulation
 % Result_NIF.Velo_Mea = simOut.Est_Velo_B_S;
 % Result_NIF.Velo_Est = simOut.Velo_B_S;
-
-% Compute the objective function
-Obj_Val = Objective_Function(Estimation_Var);
