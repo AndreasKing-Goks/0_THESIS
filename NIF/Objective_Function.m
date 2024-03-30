@@ -17,7 +17,7 @@ end
 Param_NIF.AM = Estimation_Var(1:6);
 Param_NIF.K_l = Estimation_Var(7:12);
 Param_NIF.K_nl = Estimation_Var(13:18);
-Param_NIF.Ballast_Force = Estimation_Var(19:24)';
+Param_NIF.Ballast_Force = [0 ; 0; Estimation_Var(19:21)'; 0];
 
 % Set the model name
 modelName = 'BlueROV2_Exp_Simu_NIF';

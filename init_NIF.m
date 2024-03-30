@@ -196,19 +196,22 @@ set_param('BlueROV2_Exp_Simu_NIF', 'StopTime', num2str(stop_time));
 
 % Get the estimation variables
 % NIF Parameters
-% % Initial and ground truth condition
-AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
-K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
-K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
-Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
+% % % Initial and ground truth condition
+% AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
+% K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
+% K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
+% Ballast_Term = [0; 0; 0];                                   % Ballast Term
+% Ballast_Force = [0; 0; Ballast_Term; 0];                    % Ballast Force
 
-% AM = [1, 1, 1, 1, 1, 1];      % Added Mass
-% K_l = [1, 1, 1, 1, 1, 1];                           % Linear Damping Coefficient
-% K_nl = [1, 1, 1, 1, 1, 1];          % Nonlinear Damping Coefficient
-% Ballast_Force = [0; 0; 0; 0; 0; 0];                         % Ballast Term
+% % Initial and ground truth condition
+AM = [1, 1, 1, 1, 1, 1];     % Added Mass
+K_l = [1, 1, 1, 1, 1, 1];                           % Linear Damping Coefficient
+K_nl = [1, 1, 1, 1, 1, 1];          % Nonlinear Damping Coefficient
+Ballast_Term = [1; 1; 1];                                   % Ballast Term
+Ballast_Force = [0; 0; Ballast_Term; 0];                    % Ballast Force
 
 % INPUT
-Estimation_Var = [AM K_l K_nl Ballast_Force'];              % Estimation variables
+Estimation_Var = [AM K_l K_nl Ballast_Term'];              % Estimation variables
 
 % Set the mode of the objective function
 % Available mode: 'heave', 'roll', 'pitch'
@@ -227,7 +230,7 @@ obj_func = @(var) Objective_Function(Estimation_Var, mode);
 Est_AM = Est_Var(1:6)
 Est_K_l = Est_Var(7:12)
 Est_K_nl = Est_Var(13:18)
-Est_g0 = Est_Var(19:24)
+Est_g0 = Est_Var(19:21)
 
 %% NOT USED
 % % Run the Simulink model
