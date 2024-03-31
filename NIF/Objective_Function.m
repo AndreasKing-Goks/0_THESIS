@@ -1,4 +1,4 @@
-function Obj_Val = Objective_Function(Estimation_Var, mode)
+function Obj_Val = Objective_Function(Estimation_Var_Scaled, mode, scales)
 global Param_NIF
 %% Get the mode of objective function
 % To optimize heave parameters
@@ -13,6 +13,9 @@ else
 end
 
 %% Get data from simulink
+% Scales back Estimation_Var_Scaled to Estimation_Var
+Estimation_Var = Estimation_Var_Scaled .* scales;
+
 % Get the optimization variables
 Param_NIF.AM = Estimation_Var(1:6);
 Param_NIF.K_l = Estimation_Var(7:12);
@@ -54,5 +57,10 @@ nominator = delta' * delta;
 denuminator = Velo_Mea' * Velo_Mea;
 
 Obj_Val = (nominator/denuminator) * G_delta;
+
+%% Handle exploding objective value
+if Obj_Val > 100000
+    Obj_Val = 100000;
+end
 
 end
