@@ -1,5 +1,5 @@
-function Obj_Val = Objective_Function(Estimation_Var_Scaled, mode, scales)
-global Param_NIF
+function Obj_Val = Objective_Function(Estimation_Var_Scaled, mode, scales, dt, stop_time, accFunargs)
+global Param
 %% Get the mode of objective function
 % To optimize heave parameters
 if strcmp(mode, 'heave')
@@ -12,39 +12,19 @@ else
     error('Mode selection is not supported. Stopping script.');
 end
 
-%% Get data from simulink
+%% Get the estimation data
 % Scales back Estimation_Var_Scaled to Estimation_Var
 Estimation_Var = Estimation_Var_Scaled .* scales;
 
 % Get the optimization variables
-Param_NIF.AM = Estimation_Var(1:6);
-Param_NIF.K_l = Estimation_Var(7:12);
-Param_NIF.K_nl = Estimation_Var(13:18);
-Param_NIF.Ballast_Force = [0 ; 0; Estimation_Var(19:21)'; 0];
+Param.NIF_AM = Estimation_Var(1:6);
+Param.NIF_K_l = Estimation_Var(7:12);
+Param.NIF_K_nl = Estimation_Var(13:18);
+Param.NIF_Ballast_Force = [0 ; 0; Estimation_Var(19:21)'; 0];
 
-% Set the model name
-modelName = 'BlueROV2_Exp_Simu_NIF';
-
-% Full path to the "Ballast" block within the subsystems
-ballastBlockPath = 'BlueROV2_Exp_Simu_NIF/For Estimation/BlueROV2/Ballast Force in Body Frame';
-
-% Set the parameter at Simulink Model
-set_param([modelName '/Added_Mass'], 'Value', mat2str(Param_NIF.AM))
-set_param([modelName '/Linear_Damping'], 'Value', mat2str(Param_NIF.K_l))
-set_param([modelName '/Nonlinear_Damping'], 'Value', mat2str(Param_NIF.K_nl))
-set_param([modelName '/Ballast_Force'], 'Value', mat2str(Param_NIF.Ballast_Force))
-set_param([ballastBlockPath '/Ballast'], 'Before', mat2str(Param_NIF.Ballast_Force))
-set_param([ballastBlockPath '/Ballast'], 'After', mat2str(Param_NIF.Ballast_Force))
-
-
-% Run the Simulink Model
-simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
-
-% Get the Velo_Mea
-Velo_Mea = squeeze(simOut.Est_Velo_B_S(data,:,:));
-
-% Get the Velo_Est
-Velo_Est = squeeze(simOut.Velo_B_S(data,:,:));
+% Get the measured velocity
+[~, nu_b] = BlueROV2_Dynamic_Model(dt, stop_time, accFunargs);
+Velo_Mea = nu_b;
 
 %% Convergence coefficient
 G_delta = 100;

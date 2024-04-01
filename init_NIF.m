@@ -35,10 +35,10 @@ addpath(fullfile(currentDir, 'NIF'));
 
 %% Open Simulink Model
 % Correct modelName to exclude the file extension for bdIsLoaded
-modelName = 'BlueROV2_Exp_Simu_NIF';
+modelName = 'BlueROV2_Exp_Simu';
 
 % Use the full file name including extension with open_system
-modelFileName = 'BlueROV2_Exp_Simu_NIF.slx';
+modelFileName = 'BlueROV2_Exp_Simu.slx';
 
 % Checking if the model is already loaded to avoid loading it again
 if ~bdIsLoaded(modelName)
@@ -101,6 +101,9 @@ elseif Method == 2
 else
     error('Method selection is not supported. Stopping script.');
 end
+
+% Set the stop time of your Simulink model
+set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
 % Initial set
@@ -181,19 +184,38 @@ Ballast_Config = Ballast_Configuration(prompt, funargs);
 % Compute the ballast force
 Ballast_Force = Ballast_Compute(Ballast_Config);
 
+%% Thruster Force
+Thruster_Force = zeros(6,1);
+
 %% Tether Force
 Tether_Force = zeros(6,1);
 
+%% Create accFunargs
+accFunargs = {Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B};
+
+%% HELP READING Acceleration result
+% Forces defined in NED at first, then transformed to the body coordinate
+% Thus, positive sign means downwards
+% Positive acceleration means Negatively Buoyant
+% Negative acceleration means Positively Buoyant
+
+%% RUN SIMULINK MODEL to get the acceleration, velocity, position, and body force data
+% Run the Simulink Model
+simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
+
+% Get the nu_dot_b
+nu_dot_b = simOut.Acc_B_S;
+
+% Get the nu_b
+nu_b = simOut.Velo_B_S;
+
+% Get the eta_n
+eta_n = simOut.Pos_N_S;
+
+% Get the tau_b
+tau_b = simOut.tau_b;
+
 %% Numerical Integration Fitting Method
-% % NIF Parameters
-% Param_NIF.AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];   % Added Mass
-% Param_NIF.K_l = [13.7, 0, 33.0, 0, 0.8, 0];                         % Linear Damping Coefficient
-% Param_NIF.K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];        % Nonlinear Damping Coefficient
-% Param_NIF.Ballast_Force = [0; 0; 0; 0; 0; 0];                       % Ballast Term
-
-% Set the stop time of your Simulink model
-set_param('BlueROV2_Exp_Simu_NIF', 'StopTime', num2str(stop_time));
-
 % Get the estimation variables
 % NIF Parameters
 % % % Initial and ground truth condition
@@ -225,10 +247,7 @@ Estimation_Var = [AM K_l K_nl Ballast_Term'];              % Estimation variable
 mode = 'heave';
 
 % Set pseudo function of the objective function
-obj_func = @(var) Objective_Function(var, mode, scales);
-
-% % Compute the objective function
-% Obj_Val = obj_func(Estimation_Var)
+obj_func = @(var) Objective_Function(var, mode, scales, dt, stop_time, accFunargs);
 
 % Run NIF
 [Opt_Var, Obj_Val] = NIF(obj_func, Estimation_Var, scales);

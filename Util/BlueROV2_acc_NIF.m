@@ -1,9 +1,9 @@
-function [Acc_G] = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
+function [Acc_G] = BlueROV2_acc_NIF(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% BlueROV2_acc()                                                          %
+% BlueROV2_acc_NIF()                                                      %
 %                                                                         %
 % Compute the dynamics of the BlueROV2 given the external forces,         %
-% position and velocity described at the body frame                       %
+% position and velocity described at the body frame, for NIF method       %
 %                                                                         %
 % Argument:                                                               %
 % Ex_Force  : External forces directed at sphere, described on Body Frame %
@@ -16,7 +16,7 @@ function [Acc_G] = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos
 % [9]  An Open-Source Benchmark Simulator: Control of a BlueROV2          %
 %      Underwater Robot                                                   %
 %                                                                         %
-% Created:      13.02.2024	Andreas Sitorus                               %
+% Created:      01.04.2024	Andreas Sitorus                               %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global Param
@@ -72,6 +72,15 @@ xb = Param.CB.rb(1);
 yb = Param.CB.rb(2);
 zb = Param.CB.rb(3);
 
+%% Generalized Mass Matrix for NIF
+Param.NIF_Ma = -diag(Param.NIF_AM);
+
+Param.NIF_Ma_o = Transform(Param.NIF_Ma, Param.CB.rb_o);
+ 
+Param.NIF_MT = Param.Mrb_o - Param.NIF_Ma_o;
+
+Param.NIF_inv_MT = inv(Param.NIF_MT);
+
 %% Restoring Forces
 % Described in Body Frame, at Center of Gravity. ALREADY FOR THE LEFT HAND
 % SIDE
@@ -112,12 +121,12 @@ Param.Crb = [Crb11 Crb12;
 Param.Crb_o = (H_(Param.CG.rg_o))' * Param.Crb * V_t_g;
 
 % Added Mass Coefficient
-Xud = Param.AM(1);
-Yvd = Param.AM(2);
-Zwd = Param.AM(3);
-Kpd = Param.AM(4);
-Mqd = Param.AM(5);
-Nrd = Param.AM(6);
+Xud = Param.NIF_AM(1);
+Yvd = Param.NIF_AM(2);
+Zwd = Param.NIF_AM(3);
+Kpd = Param.NIF_AM(4);
+Mqd = Param.NIF_AM(5);
+Nrd = Param.NIF_AM(6);
 
 % Get CoB-body velocity
 u_cb = V_t_b(1,1);
@@ -150,10 +159,10 @@ Param.Fc_o = (Param.Crb_o + Param.Ca_o);
 % All coefficients obtained from Experimentation [9]
 
 % Linear Damping Forces 
-Param.Fld_o = -(H_(Param.CB.rb_o))' * Param.K_l * _V_t_b;
+Param.Fld_o = -(H_(Param.CB.rb_o))' * diag(Param.NIF_K_l) * V_t_b;
 
 % Non-Linear Damping Forces
-NL_Damping_Coeff = diag(Param.K_nl) * abs(V_t_b);
+NL_Damping_Coeff = diag(Param.NIF_K_nl) * abs(V_t_b);
 Param.Fnld_o = -(H_(Param.CB.rb_o))' * diag(NL_Damping_Coeff) * V_t_b;
 
 % Total Damping Forces
@@ -169,5 +178,5 @@ Param.Ft = Thruster_Force;
 Param.Ftet = Tether_Force;
 
 %% Acceleration Computation 
-Acc_G = Param.inv_MT * (Param.Ft + Param.Ftet - Param.Fc_o - Param.Fd_o + Param.Fr_o + Param.g0);
+Acc_G = Param.NIF_inv_MT * (Param.Ft + Param.Ftet - Param.Fc_o - Param.Fd_o + Param.Fr_o + Param.g0);
 end

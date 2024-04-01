@@ -57,6 +57,6 @@ T_Theta_nb = [t11 t12 t13;
 
 %% Jacobian
 J_Theta_nb = [R_Theta_nb  zeros(3);
-           zeros(3) T_Theta_nb];
+              zeros(3) T_Theta_nb];
 
 end
