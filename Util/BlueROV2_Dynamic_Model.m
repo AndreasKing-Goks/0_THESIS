@@ -8,7 +8,7 @@ init_conditions = [Pos_N; Velo_B];  % Concatenate position and velocity into one
 tspan = 0:dt:stop_time;     % Fixed time steps from 0 to stop_time
 
 %% Solve the ODE using a fixed-step Runge-Kutta method
-[t, y] = ode4(@(t, y) ODE(t, y, accFunargs), tspan, init_conditions);
+[t, y] = ode4(@(t, y) ODE(t, y, accFunargs, dt), tspan, init_conditions, dt);
 
 %% Extract the position and velocity
 eta_n = y(:, 1:6);    % Position in NED frame over time

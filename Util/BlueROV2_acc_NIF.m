@@ -1,4 +1,4 @@
-function [Acc_G] = BlueROV2_acc_NIF(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
+function [Acc_G] = BlueROV2_acc_NIF(Ballast_Force, Body_Force, Tether_Force, Pos_N, Velo_B)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BlueROV2_acc_NIF()                                                      %
 %                                                                         %
@@ -84,12 +84,12 @@ Param.NIF_inv_MT = inv(Param.NIF_MT);
 %% Restoring Forces
 % Described in Body Frame, at Center of Gravity. ALREADY FOR THE LEFT HAND
 % SIDE
-Param.Fr_o = [(Param.W - Param.B)*sin(theta);
-              -(Param.W - Param.B)*cos(theta)*sin(phi);
-              -(Param.W - Param.B)*cos(theta)*cos(phi);
-              -(yg*Param.W - yb*Param.B)*cos(theta)*cos(phi) + (zg*Param.W - zb*Param.B)*cos(theta)*sin(phi);
-              (zg*Param.W - zb*Param.B)*sin(theta) + (xg*Param.W - xb*Param.B)*cos(theta)*cos(phi);
-              -(xg*Param.W - xb*Param.B)*cos(theta)*sin(phi) - (yg*Param.W - yb*Param.B)*sin(theta)];
+Fr_o = [(Param.W - Param.B)*sin(theta);
+        -(Param.W - Param.B)*cos(theta)*sin(phi);
+        -(Param.W - Param.B)*cos(theta)*cos(phi);
+        -(yg*Param.W - yb*Param.B)*cos(theta)*cos(phi) + (zg*Param.W - zb*Param.B)*cos(theta)*sin(phi);
+        (zg*Param.W - zb*Param.B)*sin(theta) + (xg*Param.W - xb*Param.B)*cos(theta)*cos(phi);
+        -(xg*Param.W - xb*Param.B)*cos(theta)*sin(phi) - (yg*Param.W - yb*Param.B)*sin(theta)];
 
 %% Coriolis-Centripetal Forces
 % MOI
@@ -116,9 +116,9 @@ Crb22 = [0 -Izz*r_cg -Iyy*q_cg;
          Izz*r_cg 0 Ixx*p_cg;
          Iyy*q_cg -Ixx*p_cg 0];
 
-Param.Crb = [Crb11 Crb12;
-             Crb21 Crb22]; % Rigid Body Coriolis Force Matrix, at Center of Gravity
-Param.Crb_o = (H_(Param.CG.rg_o))' * Param.Crb * V_t_g;
+Crb = [Crb11 Crb12;
+       Crb21 Crb22]; % Rigid Body Coriolis Force Matrix, at Center of Gravity
+Crb_o = (H_(Param.CG.rg_o))' * Crb * V_t_g;
 
 % Added Mass Coefficient
 Xud = Param.NIF_AM(1);
@@ -147,36 +147,39 @@ Ca22 = [0 -Nrd*r_cb Mqd*q_cb;
         Nrd*r_cb 0 -Kpd*p_cb;
         -Mqd*q_cb Kpd*p_cb 0];
 
-Param.Ca = [Ca11 Ca12;
-            Ca21 Ca22]; % Added mass Coriolis Force Matrix, at Center of Buoyancy
-Param.Ca_o = (H_(Param.CB.rb_o))' * Param.Ca * V_t_b;
+Ca = [Ca11 Ca12;
+      Ca21 Ca22]; % Added mass Coriolis Force Matrix, at Center of Buoyancy
+Ca_o = (H_(Param.CB.rb_o))' * Ca * V_t_b;
 
 % Total Coriolis-Centripetal Force
-Param.Fc_o = (Param.Crb_o + Param.Ca_o);
+Fc_o = (Crb_o + Ca_o);
+% Fc_o = zeros(6,1);
 
 %% Damping Forces
 % Described in Body frame, at Center of Buoyancy
 % All coefficients obtained from Experimentation [9]
 
 % Linear Damping Forces 
-Param.Fld_o = -(H_(Param.CB.rb_o))' * diag(Param.NIF_K_l) * V_t_b;
+Fld_o = -(H_(Param.CB.rb_o))' * diag(Param.NIF_K_l) * V_t_b;
+% Fld_o = zeros(6,1);
 
 % Non-Linear Damping Forces
 NL_Damping_Coeff = diag(Param.NIF_K_nl) * abs(V_t_b);
-Param.Fnld_o = -(H_(Param.CB.rb_o))' * diag(NL_Damping_Coeff) * V_t_b;
+Fnld_o = -(H_(Param.CB.rb_o))' * diag(NL_Damping_Coeff) * V_t_b;
+% Fnld_o = zeros(6,1);
 
 % Total Damping Forces
-Param.Fd_o = Param.Fld_o + Param.Fnld_o; 
+Fd_o = Fld_o + Fnld_o; 
 
 %% Ballast Term (Floater/Weight)
-Param.g0 = Ballast_Force;
+g0 = Ballast_Force;
 
 %% Thruster Term
-Param.Ft = Thruster_Force;
+Ft = Body_Force;
 
 %% Tether Term
-Param.Ftet = Tether_Force;
+Ftet = Tether_Force;
 
 %% Acceleration Computation 
-Acc_G = Param.NIF_inv_MT * (Param.Ft + Param.Ftet - Param.Fc_o - Param.Fd_o + Param.Fr_o + Param.g0);
+Acc_G = Param.NIF_inv_MT * (Ft + Ftet - Fc_o + Fd_o + Fr_o + g0);
 end

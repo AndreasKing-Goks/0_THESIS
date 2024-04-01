@@ -1,4 +1,4 @@
-function Obj_Val = Objective_Function(Estimation_Var_Scaled, mode, scales)
+function Obj_Val = Objective_Function2(Estimation_Var_Scaled, mode, scales)
 global Param_NIF
 %% Get the mode of objective function
 % To optimize heave parameters
@@ -35,6 +35,7 @@ set_param([modelName '/Nonlinear_Damping'], 'Value', mat2str(Param_NIF.K_nl))
 set_param([modelName '/Ballast_Force'], 'Value', mat2str(Param_NIF.Ballast_Force))
 set_param([ballastBlockPath '/Ballast'], 'Before', mat2str(Param_NIF.Ballast_Force))
 set_param([ballastBlockPath '/Ballast'], 'After', mat2str(Param_NIF.Ballast_Force))
+
 
 % Run the Simulink Model
 simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');

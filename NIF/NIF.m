@@ -2,11 +2,11 @@ function [Opt_Var, Obj_Val] = NIF(obj_func, Estimation_Var, scales)
 %% "fmincon" parameters
 % Define the options structure with various settings
 options = optimoptions('fmincon', ...
-    'OptimalityTolerance', 1e-10, ...  % Convergence tolerance
-    'StepTolerance', 1e-10, ...       % Step tolerance
-    'ConstraintTolerance', 1e-10, ...  % Constraint tolerance
-    'MaxIterations', 50, ...         % Maximum number of iterations
-    'Algorithm', 'interior-point', ...           % Optimization algorithm
+    'OptimalityTolerance', 1e-20, ...  % Convergence tolerance
+    'StepTolerance', 1e-20, ...       % Step tolerance
+    'ConstraintTolerance', 1e-20, ...  % Constraint tolerance
+    'MaxIterations', 100, ...         % Maximum number of iterations
+    'Algorithm', 'sqp', ...           % Optimization algorithm
     'CheckGradients', false, ...         % Cbeck gradients
     'Display', 'iter-detailed', ...            % Display output at each iteration
     'PlotFcn', @optimplotfval);       % Plot the objective function value at each iteration

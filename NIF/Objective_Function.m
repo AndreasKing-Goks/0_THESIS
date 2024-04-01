@@ -12,6 +12,12 @@ else
     error('Mode selection is not supported. Stopping script.');
 end
 
+%% Get the measured data
+% Velo mea should span over all the time steps.
+% Thus extract the data directly
+temp_Velo_Mea = squeeze(Param.NIF_nu_b).';
+Velo_Mea = temp_Velo_Mea(:, data);
+
 %% Get the estimation data
 % Scales back Estimation_Var_Scaled to Estimation_Var
 Estimation_Var = Estimation_Var_Scaled .* scales;
@@ -22,9 +28,9 @@ Param.NIF_K_l = Estimation_Var(7:12);
 Param.NIF_K_nl = Estimation_Var(13:18);
 Param.NIF_Ballast_Force = [0 ; 0; Estimation_Var(19:21)'; 0];
 
-% Get the measured velocity
+% Get the estimated velocity
 [~, nu_b] = BlueROV2_Dynamic_Model(dt, stop_time, accFunargs);
-Velo_Mea = nu_b;
+Velo_Est = nu_b(:, data);
 
 %% Convergence coefficient
 G_delta = 100;

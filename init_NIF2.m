@@ -36,10 +36,10 @@ addpath(fullfile(currentDir, 'NIF'));
 
 %% Open Simulink Model
 % Correct modelName to exclude the file extension for bdIsLoaded
-modelName = 'BlueROV2_Exp_Simu';
+modelName = 'BlueROV2_Exp_Simu_NIF';
 
 % Use the full file name including extension with open_system
-modelFileName = 'BlueROV2_Exp_Simu.slx';
+modelFileName = 'BlueROV2_Exp_Simu_NIF.slx';
 
 % Checking if the model is already loaded to avoid loading it again
 if ~bdIsLoaded(modelName)
@@ -104,7 +104,7 @@ else
 end
 
 % Set the stop time of your Simulink model
-set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
+set_param('BlueROV2_Exp_Simu_NIF', 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
 % Initial set
@@ -214,8 +214,8 @@ eta_n = simOut.Pos_N_S;
 % Get the tau_b - USED FOR VELOCITY INTEGRATION
 Thruster_Force = simOut.tau_b;
 
-%% Create accFunargs
-accFunargs = {Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B};
+% %% Create accFunargs
+% accFunargs = {Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B};
 
 %% Numerical Integration Fitting Method
 % Get the estimation variables
@@ -239,7 +239,7 @@ AM = [2.3567, 2.1206, 8.6863, 2.1858, 2.1348, 2.2215];     % Added Mass
 K_l = [10.7, 0, 25.0, 0, 1.8, 0];                           % Linear Damping Coefficient
 K_nl = [101.0, 187.0, 130.0, 0.192, 1.470, 0.500];          % Nonlinear Damping Coefficient
 Ballast_Term = [0; 0; 0];                                   % Ballast Term
-% Ballast_Force = [0; 0; Ballast_Term; 0];                    % Ballast Force
+Ballast_Force = [0; 0; Ballast_Term; 0];                    % Ballast Force
 
 % INPUT
 Estimation_Var = [AM K_l K_nl Ballast_Term'];              % Estimation variables
@@ -249,24 +249,13 @@ Estimation_Var = [AM K_l K_nl Ballast_Term'];              % Estimation variable
 mode = 'heave';
 
 % Set pseudo function of the objective function
-obj_func = @(var) Objective_Function(var, mode, scales, dt, stop_time, accFunargs);
+obj_func = @(var) Objective_Function2(var, mode, scales, dt, stop_time);
 
 % Run NIF
-[Opt_Var, Obj_Val] = NIF(obj_func, Estimation_Var, scales);
+[Opt_Var, Obj_Val] = NIF2(obj_func, Estimation_Var, scales);
 
 %% Display Results
-% Compare added mass
-Opt_AM = Opt_Var(1:6)
-Ref_AM = Param.AM
-
-% Compare linear damping
-Opt_K_l = Opt_Var(7:12)
-Ref_K_l = Param.K_l
-
-% Compare nonlinear damping
-Opt_K_nl = Opt_Var(13:18)
-Ref_K_nl = Param.K_nl
-
-% Compare ballast term
-Opt_g0 = Opt_Var(19:21)
-Ref_g0 = Ballast_Force'
+Opt_AM = Est_Var(1:6)
+Opt_K_l = Est_Var(7:12)
+Opt_K_nl = Est_Var(13:18)
+Opt_g0 = Est_Var(19:21)
