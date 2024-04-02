@@ -1,7 +1,7 @@
 function [eta_n, nu_b] = BlueROV2_Dynamic_Model(dt, stop_time, accFunargs)
 %% Initial conditions
-Pos_N = accFunargs{4};
-Velo_B = accFunargs{5};
+Pos_N = accFunargs{3};
+Velo_B = accFunargs{4};
 init_conditions = [Pos_N; Velo_B];  % Concatenate position and velocity into one vector
 
 %% Time span for the simulation with fixed time steps

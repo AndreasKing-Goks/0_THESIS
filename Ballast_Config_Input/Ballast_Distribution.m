@@ -1,6 +1,9 @@
 clear
 clc
 global Param_B
+%% Start Elapsed Time Counter
+tic
+
 %% Initialization
 % Get ballast parameters
 Param_B = Ballast_Param();
@@ -170,22 +173,6 @@ disp(['Z    ', sprintf('%0.4f    %0.4f    %0.4f', g0(3), g_opt(3), residual(3))]
 disp(['K    ', sprintf('%0.4f    %0.4f    %0.4f', g0(4), g_opt(4), residual(4))]);
 disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]);
 
-%% UNUSED
-% Find the last non zero optimal value and prompt
-% % If the solution converges
-% if stall
-%     opt_obj_val = best_fitness_stall 
-%     opt_prompt = best_prompt_stall;
-% % If the solution is not converges
-% else
-%     last_nz_index = find(best_fitness_history, 1, 'last'); % Finds the last non-zero element's index
-%     if ~isempty(last_nz_index)
-%         % Retrieves the value
-%         opt_obj_val = best_fitness_history(last_nz_index)
-%         opt_prompt = best_prompt_history(last_nz_index,:);
-%     else
-%         % In case best_fitness_history is all zeros, handle accordingly
-%         opt_obj_val = []
-%         opt_prompt = [];
-%     end
-% end
+%% Display Elapsed Time
+Elapsed_Time = toc;
+fprintf('Elapsed time is %f seconds.\n', Elapsed_Time);

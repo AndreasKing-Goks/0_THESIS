@@ -1,4 +1,4 @@
-function Obj_Val = Objective_Function(Estimation_Var_Scaled, mode, scales, dt, stop_time, accFunargs)
+function Obj_Val = Objective_Function(Estimation_Var, mode, scales, dt, stop_time, accFunargs)
 global Param
 %% Get the mode of objective function
 % To optimize heave parameters
@@ -20,7 +20,7 @@ Velo_Mea = temp_Velo_Mea(:, data);
 
 %% Get the estimation data
 % Scales back Estimation_Var_Scaled to Estimation_Var
-Estimation_Var = Estimation_Var_Scaled .* scales;
+Estimation_Var = Estimation_Var .* scales;
 
 % Get the optimization variables
 Param.NIF_AM = Estimation_Var(1:6);
