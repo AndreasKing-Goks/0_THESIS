@@ -75,13 +75,14 @@ dt = 0.1;  %-----To set
 % Implement the pre-determined reference model for the controller
 % Method 1: Cubic Hermite Interpolation
 % Method 2: Automatic Guidance Function
-% There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
+% There are 4 cases: Heave case(1), Roll case(2), Pitch case(3)
+% Exclusive to Method 2 are Static case (4)
 
 % Methods selector
 Method = 2;
 
 % Cases selector
-Case = 1;
+Case = 4;
 
 % Define time check points
 % Note:
@@ -138,6 +139,11 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % Ki = [30; 30; 30; 10; 80; 1];
 % Kd = [90; 90; 80; 100; 120; 1];
 
+% % Best Static case
+% Kp = [255; 545; 7095; 2420; 2375; 1];
+% Ki = [45; 45; 10; 96; 96; 1];
+% Kd = [155; 355; 8985; 1205; 1205; 1];
+
 %% Extended Kalman Filter Parameters
 % [inv_M, B, H, R, Q, dt, inv_Tb, Gamma_o] = EKF_param(dt);
 
@@ -170,7 +176,7 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 f_prompt = {'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN'};
 % Weights Prompt
 % Location : FR   FL   OMF  IMF  IMA  OMA  AR   AL
-w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
+w_prompt = {'WA' 'WA' 'WN' 'WA' 'WA' 'WN' 'WN' 'WN'};
 prompt = [f_prompt w_prompt];
 
 % Other function arguments
@@ -194,7 +200,7 @@ Env_Force = zeros(6,1);
 Tether_Force = zeros(6,1);
 
 %% Sphere Dynamic Model [FOR CHECKING]
-Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B);
+% Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B);
 
 %% HELP READING Acceleration result
 % Forces defined in NED at first, then transformed to the body coordinate
@@ -202,4 +208,43 @@ Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B)
 % Positive acceleration means Negatively Buoyant
 % Negative acceleration means Positively Buoyant
 
-%% UNUSED
+%% RUN SIMULINK MODEL to get the body force data for static case
+% Measured from simulator
+% Run the Simulink Model
+simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
+
+% Get the tau_b - USED FOR VELOCITY INTEGRATION
+Total_Thruster_Force = simOut.tau_b;
+
+if Case == 4
+    % Get the size of Total_Thruster_Force
+    [~, Column_Length] = size(Total_Thruster_Force);
+
+    % Get the starting time index for the static condition
+    t_s = 20;
+    t_s_index = (t_s/dt) + 1;
+
+    % Get the mean of each thruster dof 
+    Mean_Total_Thruster = zeros(1, Column_Length);
+    for column = 1 : Column_Length
+        Mean_Total_Thruster(1, column) = mean(Total_Thruster_Force(t_s_index:end , column));
+    end
+end
+
+%% Run Ballast Distribution Algorithm
+% Get the g0
+g0 = Mean_Total_Thruster';
+
+% Ballast distribution parameters
+max_f = 24;                     % Maximum allowed used floaters
+max_w = 8;                      % Maximum allowed used weights
+pop_size = 1000;                % Population size
+num_generations = 150;          % Number of generation
+crossover_rate = 0.7;           % Rate of crossover occurance
+mutation_rate = 0.005;          % Rate of mutation occurance
+stall_generations_limit = 15;   % Number of generations without improvement to tolerate
+
+ballastFunargs = {max_f, max_w, pop_size, num_generations, crossover_rate, mutation_rate, stall_generations_limit};
+
+% Ballast_Distribution
+Ballast_Distribution_Func(g0, ballastFunargs)

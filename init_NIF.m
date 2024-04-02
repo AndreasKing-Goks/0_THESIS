@@ -9,9 +9,6 @@
 clear
 clc
 global Param
-%% Start Elapsed Time Counter
-tic
-
 %% Add Path
 % Current dir
 currentDir = fileparts(mfilename('fullpath'));
@@ -82,7 +79,8 @@ dt = 0.1;  %-----To set
 % Implement the pre-determined reference model for the controller
 % Method 1: Cubic Hermite Interpolation
 % Method 2: Automatic Guidance Function
-% There are 3 cases: Heave case(1), Roll case(2), and Pitch case(3)
+% There are 4 cases: Heave case(1), Roll case(2), Pitch case(3)
+% Exclusive to Method 2 are Static case (4)
 
 % Methods selector
 Method = 2;
@@ -144,6 +142,11 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % Kp = [120; 120; 120; 200; 100; 1];
 % Ki = [30; 30; 30; 10; 80; 1];
 % Kd = [90; 90; 80; 100; 120; 1];
+
+% % Best Static case
+% Kp = [255; 545; 7095; 2420; 2375; 1];
+% Ki = [45; 45; 10; 96; 96; 1];
+% Kd = [155; 355; 8985; 1205; 1205; 1];
 
 %% Ballast Force
 % Floater Code [dtype=string] - 3 bits system:
@@ -234,13 +237,9 @@ scale_Ballast_Term = [20; 1; 1];                                % Ballast Term
 scales = [scale_AM, scale_K_l, scale_K_nl, scale_Ballast_Term'];  
 
 % % Initial potimization parameters
-% NIF_AM = [2.3567, 2.1206, 8.6863, 2.1858, 2.1348, 2.2215];      % Added Mass
-% NIF_K_l = [10.7, 0, 25.0, 0, 1.8, 0];                           % Linear Damping Coefficient
-% NIF_K_nl = [101.0, 187.0, 130.0, 0.192, 1.470, 0.500];          % Nonlinear Damping Coefficient
-% NIF_Ballast_Term = [0; 0; 0];                                   % Ballast Term
-NIF_AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
-NIF_K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
-NIF_K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
+NIF_AM = [2.3567, 2.1206, 8.6863, 2.1858, 2.1348, 2.2215];      % Added Mass
+NIF_K_l = [10.7, 0, 25.0, 0, 1.8, 0];                           % Linear Damping Coefficient
+NIF_K_nl = [101.0, 187.0, 130.0, 0.192, 1.470, 0.500];          % Nonlinear Damping Coefficient
 NIF_Ballast_Term = [0; 0; 0];                                   % Ballast Term
 
 % Create accFunargs for the objective function
@@ -279,7 +278,3 @@ Ref_K_nl = Param.K_nl
 % Compare ballast term
 Opt_g0 = Opt_Var(19:21)
 Ref_g0 = Ballast_Force(3:5)'
-
-%% Display Elapsed Time
-Elapsed_Time = toc;
-fprintf('Elapsed time is %f seconds.\n', Elapsed_Time);

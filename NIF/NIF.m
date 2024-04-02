@@ -1,4 +1,7 @@
 function [Opt_Var, Obj_Val] = NIF(obj_func, Estimation_Var, scales)
+%% Start Elapsed Time Counter
+tic
+
 %% "fmincon" parameters
 % Define the options structure with various settings
 options = optimoptions('fmincon', ...
@@ -8,7 +11,7 @@ options = optimoptions('fmincon', ...
     'MaxIterations', 100, ...           % Maximum number of iterations
     'Algorithm', 'sqp', ...             % Optimization algorithm
     'ObjectiveLimit', 1e-40, ...        % Objective Limit
-    'ScaleProblem', false, ...           % Problem Scale
+    'ScaleProblem', true, ...           % Problem Scale
     'CheckGradients', false, ...        % Cbeck gradients
     'Display', 'iter-detailed', ...     % Display output at each iteration
     'PlotFcn', @optimplotfval);         % Plot the objective function value at each iteration
@@ -40,5 +43,9 @@ ub = ub ./ scales;
 
 %% Scaled back the Est_Var_Scaled to Est_Var
 Opt_Var = Opt_Var .* scales;
+
+%% Display Elapsed Time
+Elapsed_Time = toc;
+fprintf('Elapsed time for the NIF method is %f seconds.\n', Elapsed_Time);
 
 end

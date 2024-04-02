@@ -10,7 +10,7 @@ funargs = ofunargs{3};
 %% Compute the objective value
 g_obj = Ballast_Compute(Ballast_Config);
 
-objective = g0 - g_obj;
+objective = g0(3:5) - g_obj(3:5);
 
 % objective_val = objective' * objective;
 
