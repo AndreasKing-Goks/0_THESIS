@@ -221,11 +221,10 @@ Total_Thruster_Force = simOut.tau_b;
 % Get the estimation variables
 % NIF Parameters
 % % % Initial and ground truth condition
-% AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
-% K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
-% K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
-% Ballast_Term = [0; 0; 0];                                   % Ballast Term
-% Ballast_Force = [0; 0; Ballast_Term; 0];                    % Ballast Force
+% NIF_AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
+% NIF_K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
+% NIF_K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
+% NIF_Ballast_Term = [0; 0; 0];                                   % Ballast Term
 
 % % Parameter scaling
 scale_AM = [10, 10, 10, 0.2, 0.2, 0.2];                         % Added Mass
@@ -235,9 +234,13 @@ scale_Ballast_Term = [20; 1; 1];                                % Ballast Term
 scales = [scale_AM, scale_K_l, scale_K_nl, scale_Ballast_Term'];  
 
 % % Initial potimization parameters
-NIF_AM = [2.3567, 2.1206, 8.6863, 2.1858, 2.1348, 2.2215];      % Added Mass
-NIF_K_l = [10.7, 0, 25.0, 0, 1.8, 0];                           % Linear Damping Coefficient
-NIF_K_nl = [101.0, 187.0, 130.0, 0.192, 1.470, 0.500];          % Nonlinear Damping Coefficient
+% NIF_AM = [2.3567, 2.1206, 8.6863, 2.1858, 2.1348, 2.2215];      % Added Mass
+% NIF_K_l = [10.7, 0, 25.0, 0, 1.8, 0];                           % Linear Damping Coefficient
+% NIF_K_nl = [101.0, 187.0, 130.0, 0.192, 1.470, 0.500];          % Nonlinear Damping Coefficient
+% NIF_Ballast_Term = [0; 0; 0];                                   % Ballast Term
+NIF_AM = [6.3567, 7.1206, 18.6863, 0.1858, 0.1348, 0.2215];     % Added Mass
+NIF_K_l = [13.7, 0, 33.0, 0, 0.8, 0];                           % Linear Damping Coefficient
+NIF_K_nl = [141.0, 217.0, 190.0, 1.192, 0.470, 1.500];          % Nonlinear Damping Coefficient
 NIF_Ballast_Term = [0; 0; 0];                                   % Ballast Term
 
 % Create accFunargs for the objective function
@@ -250,12 +253,12 @@ accFunargs = {NIF_Thruster_Force, NIF_Tether_Force, NIF_Pos_N, NIF_Velo_B};
 % INPUT
 Estimation_Var = [NIF_AM NIF_K_l NIF_K_nl NIF_Ballast_Term'];              % Estimation variables
 
-% Set the mode of the objective function
-% Available mode: 'heave', 'roll', 'pitch'
-mode = 'heave';
+% Set the optimization priority of the objective function
+% [ surge | sway | heave | roll | pitch | yaw ]
+opt_weights = [1, 1, 1, 1, 1, 1];
 
 % Set pseudo function of the objective function
-obj_func = @(var) Objective_Function(var, mode, scales, dt, stop_time, accFunargs);
+obj_func = @(var) Objective_Function(var, opt_weights, scales, dt, stop_time, accFunargs);
 
 % Run NIF
 [Opt_Var, Obj_Val] = NIF(obj_func, Estimation_Var, scales);

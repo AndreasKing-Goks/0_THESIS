@@ -1,5 +1,8 @@
 function Obj_Val = Objective_Function(Estimation_Var, opt_weights, scales, dt, stop_time, accFunargs)
 global Param
+%% Get the mode of objective function
+Q = diag(opt_weights);
+
 %% Get the measured data
 % Velo mea should span over all the time steps.
 % Thus extract the data directly
@@ -41,11 +44,11 @@ for column = 1 : column_length
 end
 
 % Sum-weighted nominator
-sum_weight_nominator = opt_weights * nominator';
-sum_denuminator = sum(denuminator);
+sum_weight_nominator = 
+
 
 % Compute the objective value
-Obj_Val = (sum_weight_nominator / sum_denuminator) * G_delta;
+Obj_Val = (sum(nominator) / sum(denuminator)) * G_delta;
 
 %% Handle exploding objective value
 if Obj_Val > 100000

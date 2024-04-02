@@ -8,7 +8,7 @@ options = optimoptions('fmincon', ...
     'MaxIterations', 100, ...           % Maximum number of iterations
     'Algorithm', 'sqp', ...             % Optimization algorithm
     'ObjectiveLimit', 1e-40, ...        % Objective Limit
-    'ScaleProblem', true, ...           % Problem Scale
+    'ScaleProblem', false, ...           % Problem Scale
     'CheckGradients', false, ...        % Cbeck gradients
     'Display', 'iter-detailed', ...     % Display output at each iteration
     'PlotFcn', @optimplotfval);         % Plot the objective function value at each iteration
