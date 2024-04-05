@@ -176,7 +176,7 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 f_prompt = {'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN'};
 % Weights Prompt
 % Location : FR   FL   OMF  IMF  IMA  OMA  AR   AL
-w_prompt = {'WA' 'WA' 'WN' 'WA' 'WA' 'WN' 'WN' 'WN'};
+w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
 prompt = [f_prompt w_prompt];
 
 % Other function arguments
