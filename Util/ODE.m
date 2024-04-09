@@ -11,8 +11,8 @@ Tether_Force = accFunargs{2};
 
 %% Get the body force
 time_index = floor((t/dt) + 1); % To avoid decimal number for indexing
-Body_Force = Thruster_Force(time_index, :)';    % Get the used body force using index
-% Body_Force = zeros(6,1);
+% Body_Force = Thruster_Force(time_index, :)';    % Get the used body force using index
+Body_Force = zeros(6,1);
 
 %% Calculate body-frame acceleration
 nu_dot_b = BlueROV2_acc_NIF(Ballast_Force, Body_Force, Tether_Force, eta_n, nu_b);

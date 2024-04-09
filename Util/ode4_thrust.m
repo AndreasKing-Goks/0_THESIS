@@ -25,7 +25,7 @@ global Param
         Param.NIF_Ft(i, :) = Param.NIF_Ft_o';
 
         k1 = dt * dydt;
-        z(i,:) = dydt(1:6);
+        z(i,:) = dydt(7:end);
         k2 = dt * odefun(t(i) + dt/2, y(i,:) + k1./2).';
         k3 = dt * odefun(t(i) + dt/2, y(i,:) + k2./2).';
         k4 = dt * odefun(t(i) + dt, y(i,:) + k3).';

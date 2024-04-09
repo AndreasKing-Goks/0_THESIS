@@ -92,8 +92,8 @@ Case = 4;
 % Note:
 % idle_time sets the time for the ROV to go to start position and stay idle for a while
 % ROV needs to be idle for some idle_time before the whole simulation ends
-idle_time = 5;     
-stop_time = 15;
+idle_time = 10;     
+stop_time = 120;
 
 % Get parameters
 if Method == 1
@@ -147,14 +147,15 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Kp = [255; 545; 7095; 2420; 2375; 1];
 % Ki = [45; 45; 10; 96; 96; 1];
 % Kd = [155; 355; 8985; 1205; 1205; 1];
-Kp = [10; 10; 350; 10; 100; 1];
-Ki = [10; 10; 50; 10; 10; 1];
-Kd = [20; 20; 50; 10; 10; 1];
 
-% % Free Float case 
-% Kp = [0; 0; 0; 0; 0; 0];
-% Ki = [0; 0; 0; 0; 0; 0];
-% Kd = [0; 0; 0; 0; 0; 0];
+% Kp = [10; 10; 350; 10; 100; 1];
+% Ki = [10; 10; 50; 10; 10; 1];
+% Kd = [20; 20; 50; 10; 10; 1];
+
+% Free Float case 
+Kp = [0; 0; 0; 0; 0; 0];
+Ki = [0; 0; 0; 0; 0; 0];
+Kd = [0; 0; 0; 0; 0; 0];
 
 %% Ballast Force
 % Floater Code [dtype=string] - 3 bits system:
@@ -377,10 +378,11 @@ title('Nonlin Damp Force');
 
 subplot(3, 2, 6)
 Total_Force = Param.NIF_Fr(:, check) + Param.NIF_Fcrb(:, check) + Param.NIF_Fca(:, check) + Param.NIF_Fld(:, check) + Param.NIF_Fnld(:, check);
-% plot(Param.NIF_Ft(:, check))
-plot(Total_Force)
+plot(Param.NIF_Ft(:, check))
 grid on
 title('Thrust Force');
 
 % Optionally, you can set a shared xlabel for the subplots
 xlabel('Time Steps');
+
+hold off

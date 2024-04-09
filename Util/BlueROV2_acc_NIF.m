@@ -122,6 +122,7 @@ Crb = [Crb11 Crb12;
        Crb21 Crb22]; % Rigid Body Coriolis Force Matrix, at Center of Gravity
 Crb_o = (H_(Param.CG.rg_o))' * Crb * V_t_g;
 Param.NIF_Crb_o = Crb_o;
+% Param.NIF_Crb_o = zeros(6,1);
 
 % Added Mass Coefficient
 Xud = Param.NIF_AM(1);
@@ -154,10 +155,10 @@ Ca = [Ca11 Ca12;
       Ca21 Ca22]; % Added mass Coriolis Force Matrix, at Center of Buoyancy
 Ca_o = (H_(Param.CB.rb_o))' * Ca * V_t_b;
 Param.NIF_Ca_o = Ca_o;
+% Param.NIF_Ca_o = zeros(6,1);
 
 % Total Coriolis-Centripetal Force
 Fc_o = (Crb_o + Ca_o);
-% Fc_o = zeros(6,1);
 
 %% Damping Forces
 % Described in Body frame, at Center of Buoyancy
