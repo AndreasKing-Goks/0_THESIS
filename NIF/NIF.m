@@ -35,6 +35,8 @@ lb = lb ./ scales;
 
 % Upper bounds, then scaled it
 ub = ones(1, n)*200;
+ub(1:6) = ub(1:6)./8;
+ub(7:12) = ub(1:6)./5;
 ub(n-2 : n) = 20;
 ub = ub ./ scales;
 

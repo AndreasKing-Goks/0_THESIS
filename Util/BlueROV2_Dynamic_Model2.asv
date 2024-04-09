@@ -1,9 +1,8 @@
-function [eta_n, nu_b, nu_dot_b] = BlueROV2_Dynamic_Model(dt, stop_time, accFunargs)
+function [eta_n, nu_b, nu_dot_b] = BlueROV2_Dynamic_Model2(dt, stop_time, accFunargs)
 global Param
 %% Initial conditions
 Pos_N = accFunargs{3};
 Velo_B = accFunargs{4};
-init_conditions = [Pos_N; Velo_B];  % Concatenate position and velocity into one vector
 
 %% Time span for the simulation with fixed time steps
 tspan = 0:dt:stop_time;     % Fixed time steps from 0 to stop_time
@@ -37,10 +36,11 @@ Param.NIF_Ft = zeros(length(tspan), 6);
 % Simple integration loop using Euler's method
 for i = 1:length(tspan)-1
     % Calculate derivatives for current state
-    dydt = ODE(tspan(i), [eta_n(i, :), nu_b(i, :)], accFunargs, dt);
+    [eta_dot_n, nu_dot_b] = ODE2(t, eta_n, nu_b, accFunargs, dt)
+    dydt = ODE2(tspan(i), eta_n(i, :), nu_b(i, :), accFunargs, dt);
 
     % Get acceleration
-    nu_dot_b(i,:) = dydt(7:end);
+    nu_dot_b(i,:) = dydt(1:6);
 
     % Get force
     Param.NIF_Fr(i, :) = Param.NIF_Fr_o';
@@ -51,8 +51,8 @@ for i = 1:length(tspan)-1
     Param.NIF_Ft(i, :) = Param.NIF_Ft_o';
 
     % Update states
-    eta_n(i+1, :) = eta_n(i, :) + dydt(1:6).' * dt;  % Note the transpose operator '.'
-    nu_b(i+1, :) = nu_b(i, :) + dydt(7:12).' * dt;  % Note the transpose operator '.'
+    eta_n(i+1, :) = eta_n(i, :) + eta_dot_n * dt;  % Note the transpose operator '.'
+    nu_b(i+1, :) = nu_b(i, :) + nu_dot_b * dt;  % Note the transpose operator '.'
 end
 
 end
