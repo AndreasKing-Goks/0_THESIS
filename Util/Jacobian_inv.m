@@ -1,4 +1,4 @@
-function [J_Theta_bn] = Jacobian_inv(eta_n)
+function [J_Theta_bn] = Jacobian_inv(phi, theta, psi)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command                                                                 %
 %                                                                         %              
@@ -16,11 +16,6 @@ function [J_Theta_bn] = Jacobian_inv(eta_n)
 % Created:      27.09.2023	Andreas Sitorus                               %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Get the orientation
-phi = eta_n(4,1);       % Rolling angle
-theta = eta_n(5,1);     % Pitching angle
-psi = eta_n(6,1);       % Yaw angle
-
 %% Linear Velocity Transformation Matrix
 % Element
 r11 = cos(psi) * cos(theta);

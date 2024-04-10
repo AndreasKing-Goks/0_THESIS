@@ -8,6 +8,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
 clc
+close
 global Param
 %% Add Path
 % Current dir
@@ -86,7 +87,7 @@ dt = 0.1;  %-----To set
 Method = 2;
 
 % Cases selector
-Case = 4;
+Case = 1;
 
 % Define time check points
 % Note:
@@ -129,9 +130,9 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Kd = [20; 20; 20; 10; 10; 1];
 
 % % Best Heave case
-% Kp = [255; 545; 7095; 2420; 2375; 1];
-% Ki = [45; 45; 10; 96; 96; 1];
-% Kd = [155; 355; 8985; 1205; 1205; 1];
+Kp = [255; 545; 7095; 2420; 2375; 1];
+Ki = [45; 45; 10; 96; 96; 1];
+Kd = [155; 355; 8985; 1205; 1205; 1];
 
 % % Best Roll case
 % Kp = [1; 100; 100; 100; 200; 1];
@@ -151,11 +152,14 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Kp = [10; 10; 350; 10; 100; 1];
 % Ki = [10; 10; 50; 10; 10; 1];
 % Kd = [20; 20; 50; 10; 10; 1];
+% Kp = [10; 10; 350; 10; 10; 10];
+% Ki = [1; 1; 50; 1; 1; 1];
+% Kd = [1; 1; 50; 1; 1; 1];
 
-% Free Float case 
-Kp = [0; 0; 0; 0; 0; 0];
-Ki = [0; 0; 0; 0; 0; 0];
-Kd = [0; 0; 0; 0; 0; 0];
+% % Free Float case 
+% Kp = [0; 0; 0; 0; 0; 0];
+% Ki = [0; 0; 0; 0; 0; 0];
+% Kd = [0; 0; 0; 0; 0; 0];
 
 %% Ballast Force
 % Floater Code [dtype=string] - 3 bits system:
@@ -231,7 +235,7 @@ Total_Thruster_Force = simOut.tau_b;
 Total_Thruster_Force_x = zeros(size(Total_Thruster_Force));
 
 % Close the  Simulink Model
-% close_system(modelFileName);
+close_system(modelFileName);
 
 %% Numerical Integration Fitting Method
 % Get the estimation variables
@@ -276,7 +280,7 @@ Param.NIF_Ballast_Force = [0; 0; Param.NIF_Ballast_Term; 0];          % Ballast 
 opt_weights = [1, 1, 1, 1, 1, 1];
 
 % Runge Kutta Integration
-[eta_n_e, nu_b_e, nu_dot_b_e] = BlueROV2_Dynamic_Model(dt, stop_time, accFunargs);
+[eta_n_e, nu_b_e, nu_dot_b_e, nu_dot_b_red] = BlueROV2_Dynamic_Model(dt, stop_time, accFunargs);
 
 % Plot
 temp_eta_n_m = squeeze(eta_n).';
@@ -301,7 +305,8 @@ plot(eta_n_m(:, check));
 hold on;
 plot(eta_n_e(:, check));
 grid on
-legend('eta measured', 'eta int');
+% legend('eta measured', 'eta int');
+legend
 title('Eta Position Comparison');  % Optional: Add a title to the plot
 
 % Define subplot for nu velocity comparison
@@ -310,13 +315,16 @@ plot(nu_b_m(:, check));
 hold on;
 plot(nu_b_e(:, check));
 grid on
-legend('nu measured', 'nu int');
+% legend('nu measured', 'nu int');
+legend
+
 title('Nu Velocity Comparison');  % Optional: Add a title to the plot
 
 % Define subplot for Total Thruster Force
 subplot(2, 2, 3);  % This places the next plot in the third position
 plot(Total_Thruster_Force);
 grid on
+legend
 title('Total Thruster Force');  % Optional: Add a title to the plot
 
 % Define subplot for Acceleration
@@ -324,8 +332,11 @@ subplot(2, 2, 4);  % This places the final plot in the fourth position
 plot(nu_dot_b_m(:, check))
 hold on
 plot(nu_dot_b_e(:, check))
+% hold on
+% plot(nu_dot_b_red(:, check))
 grid on
-legend('acc measured', 'acc int');
+% legend('acc measured', 'acc int', 'reduction');
+legend
 title('Nu dot Acceleration Comparison');  % Optional: Add a title to the plot
 
 % Plot forces
@@ -341,7 +352,8 @@ plot(Param.NIF_Fr(:, check))
 hold on
 plot(Mea_Fr(:, check))
 grid on
-legend('int', 'measured');
+% legend('int', 'measured');
+legend
 title('Rest Force');
 
 subplot(3, 2, 2)
@@ -349,7 +361,8 @@ plot(Param.NIF_Fcrb(:, check))
 hold on
 plot(Mea_FCrb(:, check))
 grid on
-legend('int', 'measured');
+% legend('int', 'measured');
+legend
 title('Crb Force');
 
 subplot(3, 2, 3)
@@ -357,7 +370,8 @@ plot(Param.NIF_Fca(:, check))
 hold on
 plot(Mea_FCa(:, check))
 grid on
-legend('int', 'measured');
+% legend('int', 'measured');
+legend
 title('Ca Force');
 
 subplot(3, 2, 4)
@@ -365,7 +379,8 @@ plot(Param.NIF_Fld(:, check))
 hold on
 plot(Mea_FLd(:, check))
 grid on
-legend('int', 'measured');
+% legend('int', 'measured');
+legend
 title('Lin Damp Force');
 
 subplot(3, 2, 5)
@@ -373,16 +388,29 @@ plot(Param.NIF_Fnld(:, check))
 hold on
 plot(Mea_FNld(:, check))
 grid on
-legend('int', 'measured');
+% legend('int', 'measured');
+legend
 title('Nonlin Damp Force');
 
 subplot(3, 2, 6)
-Total_Force = Param.NIF_Fr(:, check) + Param.NIF_Fcrb(:, check) + Param.NIF_Fca(:, check) + Param.NIF_Fld(:, check) + Param.NIF_Fnld(:, check);
-plot(Param.NIF_Ft(:, check))
+% Total_Force = Param.NIF_Fr(:, check) + Param.NIF_Fcrb(:, check) + Param.NIF_Fca(:, check) + Param.NIF_Fld(:, check) + Param.NIF_Fnld(:, check);
+plot(Param.NIF_Ft)
 grid on
+legend
 title('Thrust Force');
+
+% % Figure 3
+% figure(3)
+% plot(Param.Comp_F)
+% grid on 
+% legend
+% title('Computed Force')
 
 % Optionally, you can set a shared xlabel for the subplots
 xlabel('Time Steps');
 
 hold off
+
+% % Assuming yourArray is your n by 1 array
+% isCorrect = all((1:length(Param.time_stamps))' == Param.time_stamps);
+% disp(isCorrect);

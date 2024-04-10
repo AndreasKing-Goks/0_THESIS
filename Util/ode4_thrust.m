@@ -13,7 +13,7 @@ global Param
     Param.NIF_Fnld = zeros(length(t), 6);
     Param.NIF_Ft = zeros(length(t), 6);
 
-    for i = 1:(length(t)-1)
+    for i = 1:(length(t))
         dydt = odefun(t(i), y(i,:)).';
         
         % Get force
