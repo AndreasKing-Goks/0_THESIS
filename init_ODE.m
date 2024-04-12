@@ -176,7 +176,7 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % -'WA' - Weight Available = 1
 
 % Ballast_Configuration parameters
-% Location Desctription
+% Location Description
 % F : Front
 % A : Aft (Back)
 % R : Right
@@ -189,8 +189,8 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % Location : FR    FL    AR    AL    IMR   IML   OMR   OML
 f_prompt = {'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN'};
 % Weights Prompt
-% Location : FR   FL   OMF  IMF  IMA  OMA  AR   AL
-w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
+% Location : OFR  IFR  OFL  IFL  OMF  IMF  IMA  OMA  OAR  IAR  OAL  IAL
+w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
 prompt = [f_prompt w_prompt];
 
 % Other function arguments
@@ -207,8 +207,18 @@ Ballast_Force = Ballast_Compute(Ballast_Config);
 %% Thruster Force
 Thruster_Force = zeros(6,1);
 
-%% Tether Force
-Tether_Force = zeros(6,1);
+%% Additional Force
+m_add = 0.000;          % kg
+x_add = 0.2000;         % m
+y_add = -0.1000;        % m
+z_add = -0.1260;        % m
+
+w_add = m_add * Param.Env.g;
+
+% TO AVOID MODIFYING THE DYNAMIC MODEL TOO MUCH, TETHER == ADDED
+% FINALIZE WHEN TROUBLESHOOTING IS DONE
+Tether_Force = [0; 0; w_add; w_add*x_add; w_add*y_add; w_add*z_add];
+
 
 %% HELP READING Acceleration result
 % Forces defined in NED at first, then transformed to the body coordinate

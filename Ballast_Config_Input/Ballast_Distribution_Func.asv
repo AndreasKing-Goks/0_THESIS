@@ -1,5 +1,4 @@
-clear
-clc
+function [best_fitness_history, last_nz_index] = Ballast_Distribution_Func(g0, ballastFunargs)
 global Param_B
 %% Start Elapsed Time Counter
 tic
@@ -8,17 +7,13 @@ tic
 % Get ballast parameters
 Param_B = Ballast_Param();
 
-% Get the input
-% g0 = [0; 0; -5.1; 0; 0; 0];
-g0 = [0; 0; 5.1; 0; 0; 0];
-
 % Ballast configuration parameters
-max_f = 24;
-max_w = 8;
+max_f = ballastFunargs{1};
+max_w = ballastFunargs{2};
 penalty = 1e50;     % If the ballasts usage reached the allowed amount
 
 % Population parameters
-pop_size = 5000;
+pop_size = ballastFunargs{3};
 num_hook_floater= Param_B.num_hook_floater;
 num_hook_weight= Param_B.num_hook_weight;
 num_floater = num_hook_floater * 3;
@@ -31,13 +26,13 @@ funargs = {max_f max_w};
 ofunargs = [{g0} {penalty} {funargs}];
 
 % Genetic algorithm parameters
-num_generations = 150;
-crossover_rate = 0.7;
-mutation_rate = 0.005;
+num_generations = ballastFunargs{4};
+crossover_rate = ballastFunargs{5};
+mutation_rate = ballastFunargs{6};
 fitness = zeros(pop_size,1);
 
 % Parameters for stall generations criteria
-stall_generations_limit = 15; % Number of generations without improvement to tolerate
+stall_generations_limit = ballastFunargs{7}; % Number of generations without improvement to tolerate
 stall_counter = 0; % Initialize stall counter
 best_fitness_stall = inf; % Initialize with a very high value
 
@@ -97,7 +92,7 @@ for gen = 1:num_generations
     for i = 1:pop_size
         new_gene = new_population(i,:);
         new_prompt = Decoded_Gene(new_gene, num_hook_floater, num_hook_weight);
-        fitness(i, :) = Ballast_Objective(new_prompt, ofunargs);
+        fitness(i, :) = Ballast_Objective(prompt, ofunargs);
     end
 % Find and store the best fitness and corresponding the prompt, track
 % fitness history
@@ -175,4 +170,5 @@ disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]
 
 %% Display Elapsed Time
 Elapsed_Time = toc;
-fprintf('Elapsed time for the ballast distribution is %f seconds.\n', Elapsed_Time);
+fprintf('Elapsed time is %f seconds.\n', Elapsed_Time);
+end

@@ -1,4 +1,4 @@
-function [] = Ballast_Distribution_Func(g0, ballastFunargs)
+function [best_fitness_history, last_nz_index] = Ballast_Distribution_Func(g0, ballastFunargs)
 global Param_B
 %% Start Elapsed Time Counter
 tic
@@ -92,7 +92,7 @@ for gen = 1:num_generations
     for i = 1:pop_size
         new_gene = new_population(i,:);
         new_prompt = Decoded_Gene(new_gene, num_hook_floater, num_hook_weight);
-        fitness(i, :) = Ballast_Objective(prompt, ofunargs);
+        fitness(i, :) = Ballast_Objective(new_prompt, ofunargs);
     end
 % Find and store the best fitness and corresponding the prompt, track
 % fitness history
@@ -114,7 +114,7 @@ for gen = 1:num_generations
 %% Convergence check (Stall check)
     if best_fitness < best_fitness_stall
         best_fitness_stall = best_fitness;
-        best_prompt_stall = best_prompt;
+        % best_prompt_stall = best_prompt;
         stall_counter = 0; % Reset stall counter
     elseif best_fitness == best_fitness_stall
         stall_counter = stall_counter + 1;

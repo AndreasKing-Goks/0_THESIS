@@ -199,7 +199,7 @@ Ballast_Force = Ballast_Compute(Ballast_Config);
 Thruster_Force = zeros(6,1);
 
 %% Additional Force
-m_add = 0.4;          % kg
+m_add = 0.45;          % kg
 x_add = 0.100;         % m
 y_add = -0.1000;        % m
 z_add = -0.1460;        % m
@@ -222,9 +222,7 @@ Tether_Force = [0; 0; w_add; w_add*x_add; w_add*y_add; w_add*z_add];
 %% RUN SIMULINK MODEL to get the body force data for static case
 % Measured from simulator
 % Run the Simulink Model
-disp(['Run the ' modelName '.']);
 simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
-disp('Finished compute the simulation outputs.');
 
 % Get the tau_b - USED FOR VELOCITY INTEGRATION
 Total_Thruster_Force = simOut.tau_b;
@@ -245,7 +243,7 @@ if Case == 4
 end
 
 % Close the  Simulink Model
-% close_system(modelFileName);
+close_system(modelFileName);
 disp(['Close ' modelName '.']);
 
 %% For heave case plot 
@@ -269,7 +267,7 @@ xticklabels(0:1/dt:stop_time);
 
 % x-y limit
 xlim([0, stop_time/dt])
-ylim([-1.25, 0.25])
+ylim([-1.2, 0.2])
 xlabel('Time (seconds)')
 ylabel('Position (meter/radian)')
 
@@ -355,10 +353,10 @@ g0 = Mean_Total_Thruster';
 % Ballast distribution parameters
 max_f = 24;                     % Maximum allowed used floaters
 max_w = 12;                     % Maximum allowed used weights
-pop_size = 2500;                % Population size
-num_generations = 100;          % Number of generation
+pop_size = 2000;                % Population size
+num_generations = 150;          % Number of generation
 crossover_rate = 0.7;           % Rate of crossover occurance
-mutation_rate = 0.01;          % Rate of mutation occurance
+mutation_rate = 0.005;          % Rate of mutation occurance
 stall_generations_limit = 15;   % Number of generations without improvement to tolerate
 
 ballastFunargs = {max_f, max_w, pop_size, num_generations, crossover_rate, mutation_rate, stall_generations_limit};
@@ -367,7 +365,7 @@ ballastFunargs = {max_f, max_w, pop_size, num_generations, crossover_rate, mutat
 [best_fitness_history, last_nz_index] = Ballast_Distribution_Func(g0, ballastFunargs);
 
 % Plot fitness history
-figure('Name', 'Fitness Value Evolution', 'Position', [100, 200, 800, 600])
+figure('Name', 'Fitness Value', 'Position', [100, 200, 800, 600])
 plot(best_fitness_history)
 xlabel('Generation')
 ylabel('Fitness')

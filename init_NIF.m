@@ -163,7 +163,7 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % -'WA' - Weight Available = 1
 
 % Ballast_Configuration parameters
-% Location Desctription
+% Location Description
 % F : Front
 % A : Aft (Back)
 % R : Right
@@ -176,8 +176,8 @@ Kd = [155; 355; 8985; 1205; 1205; 1];
 % Location : FR    FL    AR    AL    IMR   IML   OMR   OML
 f_prompt = {'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN' 'NNN'};
 % Weights Prompt
-% Location : FR   FL   OMF  IMF  IMA  OMA  AR   AL
-w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
+% Location : OFR  IFR  OFL  IFL  OMF  IMF  IMA  OMA  OAR  IAR  OAL  IAL
+w_prompt = {'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN' 'WN'};
 prompt = [f_prompt w_prompt];
 
 % Other function arguments
