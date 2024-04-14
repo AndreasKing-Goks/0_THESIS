@@ -102,7 +102,7 @@ else
 end
 
 % Set the stop time of your Simulink model
-set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
+set_param(modelName, 'StopTime', num2str(stop_time));
 
 %% Controller Model Parameters (PID)
 % Initial set
@@ -141,8 +141,13 @@ set_param('BlueROV2_Exp_Simu', 'StopTime', num2str(stop_time));
 % Kd = [90; 90; 80; 100; 120; 1];
 
 % % Best Static case
-Kp = [255; 545; 7095; 2420; 2375; 1];
-Ki = [45; 45; 10; 96; 96; 1];
+% For m_add =< 0.5
+% Kp = [255; 545; 7095; 2420; 2375; 1];
+% Ki = [45; 45; 10; 96; 96; 1];
+% Kd = [155; 355; 8985; 1205; 1205; 1];
+% For m_add > 0.5
+Kp = [255; 245; 4095; 1420; 1375; 1];
+Ki = [45; 45; 96; 96; 96; 1];
 Kd = [155; 355; 8985; 1205; 1205; 1];
 
 % Kp = [10; 10; 350; 10; 10; 10];
@@ -199,16 +204,16 @@ Ballast_Force = Ballast_Compute(Ballast_Config);
 Thruster_Force = zeros(6,1);
 
 %% Additional Force
-m_add = 0.4;          % kg
-x_add = 0.100;         % m
-y_add = -0.1000;        % m
+m_add = 0.500;          % kg
+x_add = 0.2000;         % m
+y_add = 0.0000;        % m
 z_add = -0.1460;        % m
 
 w_add = m_add * Param.Env.g;
 
 % TO AVOID MODIFYING THE DYNAMIC MODEL TOO MUCH, TETHER == ADDED
 % FINALIZE WHEN TROUBLESHOOTING IS DONE
-Tether_Force = [0; 0; w_add; w_add*x_add; w_add*y_add; w_add*z_add];
+Tether_Force = [0; 0; w_add; w_add*x_add; w_add*y_add; 0];
 
 %% Sphere Dynamic Model [FOR CHECKING]
 % Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B);
@@ -218,6 +223,7 @@ Tether_Force = [0; 0; w_add; w_add*x_add; w_add*y_add; w_add*z_add];
 % Thus, positive sign means downwards
 % Positive acceleration means Negatively Buoyant
 % Negative acceleration means Positively Buoyant
+% Angle, positive mean clockwise
 
 %% RUN SIMULINK MODEL to get the body force data for static case
 % Measured from simulator
@@ -246,7 +252,7 @@ end
 
 % Close the  Simulink Model
 % close_system(modelFileName);
-disp(['Close ' modelName '.']);
+% disp(['Close ' modelName '.']);
 
 %% For heave case plot 
 legend_ref = {'x ref', 'y ref', 'z ref', 'phi ref', 'theta ref', 'psi ref'};
@@ -305,7 +311,7 @@ xticklabels(0:1/dt:stop_time);
 
 % x-y limit
 xlim([0, stop_time/dt])
-ylim([-10, 2])
+ylim([-20, 5])
 xlabel('Time (seconds)')
 ylabel('Thruste Force (N)')
 
@@ -322,8 +328,8 @@ fill(x_fill, y_fill, 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.1); % Fill the a
 legend([legend_f_body, legend_period], 'Location', 'southeast')
 
 % Adding text label to the shaded area
-text(settling_time/2, 2*mean(yLimits), 'Stabilizing Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
-text((stop_time/dt + settling_time)/2, 2*mean(yLimits), 'Maintain Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
+text(settling_time/2, -15, 'Stabilizing Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
+text((stop_time/dt + settling_time)/2, -15, 'Maintain Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
 
 hold off; % Release the plot for other operations
 
@@ -331,20 +337,27 @@ grid on
 title('Thrust Output for Ballast Estimation - Heave Case')
 
 %% Check if the PID control is correct
-% Prompt the user for a yes/no response
-response = input('Is the PID control good enough? (y/n): ', 's');
+% Initialize a variable to control the loop
+isValidInput = false;
 
-% Check if the response is 'n'
-if strcmpi(response, 'n')
-    % Display a message and stop the script
-    disp('Please modify the PID gain. Stopping the operation');
-    return;  % Use 'return' to exit the script
-elseif strcmpi(response, 'y')
-    % Continue with the rest of the script
-    disp('Continuing operation...');
-else
-    % Handle invalid input
-    disp('Invalid input. Please enter y or n.');
+% Loop until a valid input is received
+while ~isValidInput
+    % Prompt the user for a yes/no response
+    response = input('Is the PID control good enough? (y/n): ', 's');
+
+    % Check if the response is 'n'
+    if strcmpi(response, 'n')
+        % Display a message and stop the script
+        disp('Please modify the PID gain. Stopping the operation');
+        return;  % Use 'return' to exit the script
+    elseif strcmpi(response, 'y')
+        % Continue with the rest of the script
+        disp('Continuing operation...');
+        isValidInput = true; % Set flag to true to break the loop
+    else
+        % Handle invalid input
+        disp('Invalid input. Please enter y or n.');
+    end
 end
 
 %% Run Ballast Distribution Algorithm
@@ -353,18 +366,25 @@ disp('Run Ballast Distribution Algorithm');
 g0 = Mean_Total_Thruster';
 
 % Ballast distribution parameters
-max_f = 24;                     % Maximum allowed used floaters
-max_w = 12;                     % Maximum allowed used weights
-pop_size = 2500;                % Population size
-num_generations = 100;          % Number of generation
-crossover_rate = 0.7;           % Rate of crossover occurance
-mutation_rate = 0.01;          % Rate of mutation occurance
-stall_generations_limit = 15;   % Number of generations without improvement to tolerate
+max_f = 24;                         % Maximum allowed used floaters
+max_w = 12;                         % Maximum allowed used weights
+pop_size = 2500;                    % Population size
+num_generations = 150;              % Number of generation
+crossover_rate = 0.75;               % Rate of crossover occurance
+mutation_rate = 0.075;               % Rate of mutation occurance
+stall_generations_limit = 15;       % Number of generations without improvement to tolerate
+fitness_tolerance = 0.05;           % Fitness Tolerance
+divergence_generations_limit = 30;  % Number of generations when fitness value diverge to tolerate
 
-ballastFunargs = {max_f, max_w, pop_size, num_generations, crossover_rate, mutation_rate, stall_generations_limit};
+ballastFunargs = {max_f, max_w, pop_size, num_generations, crossover_rate, mutation_rate, stall_generations_limit, fitness_tolerance, divergence_generations_limit};
 
 % Ballast_Distribution
-[best_fitness_history, last_nz_index] = Ballast_Distribution_Func(g0, ballastFunargs);
+[best_fitness_history, last_nz_index, opt_prompt] = Ballast_Distribution_Func(g0, ballastFunargs);
+
+% Compute the amount of used floaters and weights
+[f_amount, w_amount] = Compute_Ballast_Amount(opt_prompt);
+disp([num2str(f_amount), ' floater block/s and ', num2str(w_amount), ' weight block/s are used for the ballast distribution.'])
+disp(' ')
 
 % Plot fitness history
 figure('Name', 'Fitness Value Evolution', 'Position', [100, 200, 800, 600])
@@ -372,5 +392,227 @@ plot(best_fitness_history)
 xlabel('Generation')
 ylabel('Fitness')
 title('Fitness History')
-xlim([0 last_nz_index])
+xlim([1 last_nz_index])
 grid on
+
+%% Continue to Validation Phase
+% Initialize a variable to control the loop
+isValidInput = false;
+
+% Loop until a valid input is received
+while ~isValidInput
+    % Prompt the user for a yes/no response
+    response_val = input('Proceed to Validation Phase? (y/n): ', 's');
+
+    % Check if the response is 'n'
+    if strcmpi(response_val, 'n')
+        % Display a message and stop the script
+        disp('Stopping the operation.');
+        return;  % Use 'return' to exit the script
+    elseif strcmpi(response_val, 'y')
+        % Continue with the rest of the script
+        disp('Continuing operation...');
+        isValidInput = true; % Set flag to true to break the loop
+    else
+        % Handle invalid input
+        disp('Invalid input. Please enter y or n.');
+    end
+end
+
+%% Validation
+% (1) Turn off the PID Controller
+% (2) Add the optimal ballast
+% (3) Keep the additional load intact [DO NOT CHANGE THE TETHER (ADDITIONAL) FORCE]
+% (3) Run the free floating BlueROV2 simulator, and see how it behaves using the new ballast configuration
+
+% Turn off the thruster
+tau_b_test = [0; 0; 0; 0; 0; 0];
+
+% Other function arguments
+opt_max_f = 24;
+opt_max_w = 12;
+opt_funargs = {opt_max_f opt_max_w};
+
+% Get the ballast configuration
+Opt_Ballast_Config = Ballast_Configuration(opt_prompt, opt_funargs);
+
+% Run and close the BlueROV2_Simu free floating simulator
+testModelName = 'BlueROV2_Simu';
+testModelFileName = 'BlueROV2_Simu.slx';
+
+% Open BlueROV2 free float simulator
+% Checking if the model is already loaded to avoid loading it again
+if ~bdIsLoaded(testModelName)
+    open_system(testModelFileName);
+    disp([testModelName ' has been opened.']);
+else
+    disp([testModelName ' is already open.']);
+end
+
+% No Ballast Configuration used
+Opt_Ballast_Force = [0; 0; 0; 0; 0; 0];
+
+% Run simulator without new ballast configuration
+disp(['Run the ' testModelName '.']);
+set_param(testModelName, 'StopTime', num2str(stop_time));
+simNoTestOut = sim(testModelName, 'ReturnWorkspaceOutputs', 'on');
+disp('Finished compute the free float simulation outputs with new ballast configuration.');
+
+% Compute the ballast force
+Opt_Ballast_Force = Ballast_Compute(Opt_Ballast_Config);
+
+% Run simulator with new ballast configuration
+disp(['Run the ' testModelName '.']);
+set_param(testModelName, 'StopTime', num2str(stop_time));
+simTestOut = sim(testModelName, 'ReturnWorkspaceOutputs', 'on');
+disp('Finished compute the free float simulation outputs without new ballast configuration.');
+
+% Close simulator
+% close_system(testModelFileName);
+% disp(['Close ' testModelName '.']);
+
+% Get the free float simulation data
+nf_eta_n = squeeze(simNoTestOut.Pos_N_S)';
+nf_nu_b = squeeze(simNoTestOut.Velo_B_S)';
+nf_nu_dot_b = squeeze(simNoTestOut.Acc_B_S)';
+
+% Get the free float simulation data
+ff_eta_n = squeeze(simTestOut.Pos_N_S)';
+ff_nu_b = squeeze(simTestOut.Velo_B_S)';
+ff_nu_dot_b = squeeze(simTestOut.Acc_B_S)';
+
+%% Plot the free float simulation data without ballast configuration
+% Plot Eta_n
+figure('Name', 'Free Float Simulation: Position and  Orientation, No Ballast', 'Position', [100, 100, 1000, 600])
+plot(nf_eta_n)
+
+% Adjust time ticks
+% xticks(0:1/dt:stop_time*10); 
+xticklabels(0:1/dt:stop_time); 
+
+% x-y limit
+xlim([0, stop_time/dt])
+% ylim([-1.25, 0.25])
+xlabel('Time (seconds)')
+ylabel('Position (meter/radian)')
+
+% Add legend
+% legend([legend_ref, legend_period], 'Location', 'southeast')
+legend(legend_body, 'Location', 'southeast')
+
+hold off; % Release the plot for other operations
+
+grid on
+title('Position in NED frame')
+
+% Plot Nu_b
+figure('Name', 'Free Float Simulation: Velocity, No Ballast', 'Position', [100, 100, 1000, 600])
+plot(nf_nu_b)
+
+% Adjust time ticks
+% xticks(0:1/dt:stop_time*10); 
+xticklabels(0:1/dt:stop_time); 
+
+% x-y limit
+xlim([0, stop_time/dt])
+xlabel('Time (seconds)')
+ylabel('Velocity (m.s^-1/rad.s^-1)')
+
+% Add legend
+% legend([legend_ref, legend_period], 'Location', 'southeast')
+legend(legend_body, 'Location', 'southeast')
+
+hold off; % Release the plot for other operations
+
+grid on
+title('Velocity in body frame')
+
+% Plot Nu_dot_b
+figure('Name', 'Free Float Simulation: Acceleration, No Ballast', 'Position', [100, 100, 1000, 600])
+plot(nf_nu_dot_b)
+
+% Adjust time ticks
+% xticks(0:1/dt:stop_time*10); 
+xticklabels(0:1/dt:stop_time); 
+
+% x-y limit
+xlim([0, stop_time/dt])
+xlabel('Time (seconds)')
+ylabel('Acceleration (m.s^-2/rad.s^-2)')
+
+% Add legend
+% legend([legend_ref, legend_period], 'Location', 'southeast')
+legend(legend_body, 'Location', 'southeast')
+
+hold off; % Release the plot for other operations
+
+grid on
+title('Acceleration in body frame')
+
+%% Plot the free float simulation data with ballast configuration
+% Plot Eta_n
+figure('Name', 'Free Float Simulation: Position and  Orientation', 'Position', [100, 100, 1000, 600])
+plot(ff_eta_n)
+
+% Adjust time ticks
+% xticks(0:1/dt:stop_time*10); 
+xticklabels(0:1/dt:stop_time); 
+
+% x-y limit
+xlim([0, stop_time/dt])
+% ylim([-1.25, 0.25])
+xlabel('Time (seconds)')
+ylabel('Position (meter/radian)')
+
+% Add legend
+% legend([legend_ref, legend_period], 'Location', 'southeast')
+legend(legend_body, 'Location', 'southeast')
+
+hold off; % Release the plot for other operations
+
+grid on
+title('Position in NED frame')
+
+% Plot Nu_b
+figure('Name', 'Free Float Simulation: Velocity', 'Position', [100, 100, 1000, 600])
+plot(ff_nu_b)
+
+% Adjust time ticks
+% xticks(0:1/dt:stop_time*10); 
+xticklabels(0:1/dt:stop_time); 
+
+% x-y limit
+xlim([0, stop_time/dt])
+xlabel('Time (seconds)')
+ylabel('Velocity (m.s^-1/rad.s^-1)')
+
+% Add legend
+% legend([legend_ref, legend_period], 'Location', 'southeast')
+legend(legend_body, 'Location', 'southeast')
+
+hold off; % Release the plot for other operations
+
+grid on
+title('Velocity in body frame')
+
+% Plot Nu_dot_b
+figure('Name', 'Free Float Simulation: Acceleration', 'Position', [100, 100, 1000, 600])
+plot(ff_nu_dot_b)
+
+% Adjust time ticks
+% xticks(0:1/dt:stop_time*10); 
+xticklabels(0:1/dt:stop_time); 
+
+% x-y limit
+xlim([0, stop_time/dt])
+xlabel('Time (seconds)')
+ylabel('Acceleration (m.s^-2/rad.s^-2)')
+
+% Add legend
+% legend([legend_ref, legend_period], 'Location', 'southeast')
+legend(legend_body, 'Location', 'southeast')
+
+hold off; % Release the plot for other operations
+
+grid on
+title('Acceleration in body frame')

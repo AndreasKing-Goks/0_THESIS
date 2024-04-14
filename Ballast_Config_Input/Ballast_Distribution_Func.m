@@ -1,4 +1,4 @@
-function [best_fitness_history, last_nz_index] = Ballast_Distribution_Func(g0, ballastFunargs)
+function [best_fitness_history, last_nz_index, opt_prompt] = Ballast_Distribution_Func(g0, ballastFunargs)
 global Param_B
 %% Start Elapsed Time Counter
 tic
@@ -25,7 +25,7 @@ num_prompt = num_hook_floater + num_hook_weight;
 funargs = {max_f max_w};
 ofunargs = [{g0} {penalty} {funargs}];
 
-% Genetic algorithm parameters
+% Genetic algorithm containers
 num_generations = ballastFunargs{4};
 crossover_rate = ballastFunargs{5};
 mutation_rate = ballastFunargs{6};
@@ -33,7 +33,10 @@ fitness = zeros(pop_size,1);
 
 % Parameters for stall generations criteria
 stall_generations_limit = ballastFunargs{7}; % Number of generations without improvement to tolerate
+fitness_tolerance = ballastFunargs{8};
+divergence_generations_limit = ballastFunargs{9}';
 stall_counter = 0; % Initialize stall counter
+divergence_counter = 0; % Initialize divergence counter
 best_fitness_stall = inf; % Initialize with a very high value
 
 % Initialize population - encoded
@@ -87,7 +90,7 @@ for gen = 1:num_generations
         end
     end
 
-%% Finalization
+%% Finalization <<<<<<<<< TO CHECK
 % Final Evaluation
     for i = 1:pop_size
         new_gene = new_population(i,:);
@@ -112,24 +115,45 @@ for gen = 1:num_generations
     disp(['Generation ', num2str(gen), ': Best Fitness = ', num2str(best_fitness)]);
 
 %% Convergence check (Stall check)
+    % Check for fitness tolerance
+    if best_fitness < fitness_tolerance
+        disp('Reach the fitness tolerance.');
+        break
+    end
+
+    % Check for stall
     if best_fitness < best_fitness_stall
         best_fitness_stall = best_fitness;
+        best_generation = gen;
         % best_prompt_stall = best_prompt;
         stall_counter = 0; % Reset stall counter
     elseif best_fitness == best_fitness_stall
         stall_counter = stall_counter + 1;
+    elseif best_fitness > best_fitness_stall
+        divergence_counter = divergence_counter + 1;
     end
 
-    % Check for stall
     stall = stall_counter >= stall_generations_limit;
+    diverge = divergence_counter >= divergence_generations_limit;
+
     if stall
         disp(['No improvement for ', num2str(stall_generations_limit), ' generations.']);
+        disp(['The last minimum value is at generation ', num2str(best_generation),'.']);
         break; % Exit the loop
     end
+
+    if diverge
+        disp(['Fitness value diverges for ', num2str(divergence_generations_limit), ' generations.']);
+        disp(['The last minimum value is at generation ', num2str(best_generation),'.']);
+        break; % Exit the loop
+    end
+
+    % Check if the algorithm diverge from the latest minimum fitness value
+
 end
 
 %% Results
-% Get all the non-zero elements
+% Get all the non-zero elements (if algorithm converges before the maximum number of generation)
 nz_best_fitness_history = best_fitness_history(best_fitness_history ~= 0);
 
 % Find the minimum of the non zero best fitness history
@@ -141,7 +165,7 @@ last_nz_index = find(best_fitness_history == min_nz_best_fitness_history, ...
 
 % Evaluate the best value
 if ~isempty(last_nz_index)
-    % Retrieves the value
+    % Retrieves the value (the best prompt throughout the generations)
     opt_obj_val = best_fitness_history(last_nz_index)
     opt_prompt = best_prompt_history(last_nz_index,:);
 else
@@ -150,15 +174,40 @@ else
     opt_prompt = [];
 end
 
-
 % Optimal ballast config
 best_ballast_config = Ballast_Configuration(opt_prompt, funargs);
-floaters_config = opt_prompt(1:8)
-weights_config = opt_prompt(9:end)
+floaters_config = opt_prompt(1:8);
+weights_config = opt_prompt(9:end);
+
+% Print Floater Configuration
+disp('Floater housing configuration from top view:')
+disp(['    ', '     ','     ','  Front','     ','     ', '    '])
+disp(['    ', '    ', '|FL |', '   ','   ','     ', '|FR |','   ', '    '])
+disp(['    ', '    |', floaters_config{2}, '|   ','   ','     |', floaters_config{1},'|   ', '    '])
+disp(['Left' ,'|OML|', '   ', '|IML|','   ','|IMR|', '   ','|OMR|', 'Right'])
+disp(['    ', '|', floaters_config{8}, '|   |', floaters_config{6},'|   |',floaters_config{5}, '|   |',floaters_config{7},'|', '    '])
+disp(['    ', '    ', '|AL |', '   ','   ','     ', '|AR |','   ', '    '])
+disp(['    ', '    |', floaters_config{4}, '|   ','   ','     |', floaters_config{3},'|   ', '    '])
+disp(['    ', '     ','     ','   Aft ','     ','     ', '    '])
+disp(' ');
+
+% Print Weight Configuration
+disp('Weight configuration from top view:')
+disp(['    ', '     ','     ','Front','     ','     ', '    '])
+disp(['    ', '|W03|','|W04|','|W05|','|W02|','|W01|', '    '])
+disp(['    ', '|', weights_config{3}, ' ||', weights_config{4}, ' ||', weights_config{5}, ' ||', weights_config{2}, ' ||', weights_config{1}, ' |', '    '])
+disp(['    ', '     ','     ','|W06|','     ','     ', '    '])
+disp(['Left', '     ','     |', weights_config{6},' |     ','     ', 'Right'])
+disp(['    ', '     ','     ','|W07|','     ','     ', '    '])
+disp(['    ', '     ','     |', weights_config{7},' |     ','     ', '    '])
+disp(['    ', '|W09|','|W10|','|W08|','|W12|','|W11|', '    '])
+disp(['    ', '|', weights_config{9}, ' ||', weights_config{10}, ' ||', weights_config{8}, ' ||', weights_config{12}, ' ||', weights_config{11}, ' |', '    '])
+disp(['    ', '     ','     ',' Aft ','     ','     ', '    '])
+disp(' ')
 
 % Check final ballast term and the residual
 g_opt = Ballast_Compute(best_ballast_config);
-residual = (g0 - g_opt);
+residual = ([0; 0; g0(3:5); 0] - g_opt);
 
 % Header
 disp('        g0       g_opt    residual');
@@ -171,4 +220,5 @@ disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]
 %% Display Elapsed Time
 Elapsed_Time = toc;
 fprintf('Elapsed time is %f seconds.\n', Elapsed_Time);
+
 end
