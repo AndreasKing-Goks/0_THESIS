@@ -468,8 +468,8 @@ simTestOut = sim(testModelName, 'ReturnWorkspaceOutputs', 'on');
 disp('Finished compute the free float simulation outputs without new ballast configuration.');
 
 % Close simulator
-% close_system(testModelFileName);
-% disp(['Close ' testModelName '.']);
+close_system(testModelFileName);
+disp(['Close ' testModelName '.']);
 
 % Get the free float simulation data
 nf_eta_n = squeeze(simNoTestOut.Pos_N_S)';
