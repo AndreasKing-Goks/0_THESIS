@@ -251,8 +251,8 @@ if Case == 4
 end
 
 % Close the  Simulink Model
-% close_system(modelFileName);
-% disp(['Close ' modelName '.']);
+close_system(modelFileName);
+disp(['Close ' modelName '.']);
 
 %% For heave case plot 
 legend_ref = {'x ref', 'y ref', 'z ref', 'phi ref', 'theta ref', 'psi ref'};
