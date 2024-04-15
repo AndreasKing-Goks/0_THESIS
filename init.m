@@ -205,15 +205,15 @@ Thruster_Force = zeros(6,1);
 
 %% Additional Force
 m_add = 0.500;          % kg
-x_add = 0.2000;         % m
-y_add = 0.0000;        % m
+x_add = 0.0000;         % m
+y_add = 0.2000;        % m
 z_add = -0.1460;        % m
 
 w_add = m_add * Param.Env.g;
 
 % TO AVOID MODIFYING THE DYNAMIC MODEL TOO MUCH, TETHER == ADDED
 % FINALIZE WHEN TROUBLESHOOTING IS DONE
-Tether_Force = [0; 0; w_add; w_add*x_add; w_add*y_add; 0];
+Tether_Force = [0; 0; w_add; w_add*y_add; w_add*x_add; 0];
 
 %% Sphere Dynamic Model [FOR CHECKING]
 % Acc_G = BlueROV2_acc(Ballast_Force, Thruster_Force, Tether_Force, Pos_N, Velo_B);
