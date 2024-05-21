@@ -204,9 +204,9 @@ Ballast_Force = Ballast_Compute(Ballast_Config);
 Thruster_Force = zeros(6,1);
 
 %% Additional Force
-m_add = 0.500;          % kg
-x_add = 0.0000;         % m
-y_add = 0.2000;        % m
+m_add = 0.2500;          % kg
+x_add = 0.1000;         % m
+y_add = 0.1000;        % m
 z_add = -0.1460;        % m
 
 w_add = m_add * Param.Env.g;
@@ -251,7 +251,7 @@ if Case == 4
 end
 
 % Close the  Simulink Model
-close_system(modelFileName);
+%close_system(modelFileName);
 disp(['Close ' modelName '.']);
 
 %% For heave case plot 

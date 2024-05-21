@@ -10,18 +10,19 @@ clc
 % SOME INTERPOLATION MIGHT ALSO BE NEEDED FOR THE DEADZONE
 
 % Thrust to PWM
-val_desired = 1.233;
-mode = 1; 
+val_desired = 0.07;
+mode = 0; 
 
-% PWM to Thrust
-val_desired = 1500;
-mode = 1; 
+% % PWM to Thrust
+% val_desired = 1500;
+% mode = 1; 
 
 % Operating Voltage
-voltage = 14.8;
+voltage = 10;
 
 % Check Thrust Allocation Matrix
 T = Thrust_Allocation()
+T_inv = pinv(T)
 
 % Get result
 % result = Convert_Thrust_PWM(val_desired,voltage,mode)

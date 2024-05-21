@@ -44,11 +44,11 @@ elseif Case == 3
         idle_time, stop_time);
 elseif Case == 4
     % Reference Model Tuning Parameters [PITCH]
-    ti = [1/1, 1/1, 1/1, 1/1, 1/2, 1/1];      %-----TUNE 
+    ti = [1/1, 1/1, 1/2, 1/2, 1/2, 1/1];      %-----TUNE 
     Af = diag(ti);
 
-    omega_is = [1/1, 1/1, 1/1, 1/1, 20/1, 1/1];      %-----TUNE 
-    zeta_is = [1/1, 1/1, 1/1, 1/1, 40/100, 1/1];       %-----TUNE 
+    omega_is = [1/1, 1/1, 20/1, 20/1, 20/1, 1/1];      %-----TUNE 
+    zeta_is = [1/1, 1/1, 40/100, 40/100, 40/100, 1/1];       %-----TUNE 
 
     Omega = diag(2*omega_is.*zeta_is);
     Gamma = diag(omega_is);
