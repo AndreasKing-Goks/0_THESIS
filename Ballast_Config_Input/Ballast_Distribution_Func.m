@@ -200,22 +200,22 @@ disp(['    ', '     ','     ','|W06|','     ','     ', '    '])
 disp(['Left', '     ','     |', weights_config{6},' |     ','     ', 'Right'])
 disp(['    ', '     ','     ','|W07|','     ','     ', '    '])
 disp(['    ', '     ','     |', weights_config{7},' |     ','     ', '    '])
-disp(['    ', '|W09|','|W10|','|W08|','|W12|','|W11|', '    '])
-disp(['    ', '|', weights_config{9}, ' ||', weights_config{10}, ' ||', weights_config{8}, ' ||', weights_config{12}, ' ||', weights_config{11}, ' |', '    '])
+disp(['    ', '|W011|','|W12|','|W08|','|W10|','|W09|', '    '])
+disp(['    ', '|', weights_config{11}, ' ||', weights_config{12}, ' ||', weights_config{8}, ' ||', weights_config{10}, ' ||', weights_config{9}, ' |', '    '])
 disp(['    ', '     ','     ',' Aft ','     ','     ', '    '])
 disp(' ')
 
 % Check final ballast term and the residual
 g_opt = Ballast_Compute(best_ballast_config);
-residual = ([0; 0; g0(3:5); 0] - g_opt);
+residual = (g_opt - [0; 0; g0(3:5); 0]);
 
 % Header
-disp('        g0       g_opt    residual');
+disp('        g0_maintain       g0(zeta)    residual');
 
 % Data rows
-disp(['Z    ', sprintf('%0.4f    %0.4f    %0.4f', g0(3), g_opt(3), residual(3))]);
-disp(['K    ', sprintf('%0.4f    %0.4f    %0.4f', g0(4), g_opt(4), residual(4))]);
-disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]);
+disp(['Z    ', sprintf('    %0.4f         %0.4f       %0.4f', g0(3), g_opt(3), residual(3))]);
+disp(['K    ', sprintf('    %0.4f         %0.4f       %0.4f', g0(4), g_opt(4), residual(4))]);
+disp(['M    ', sprintf('    %0.4f         %0.4f       %0.4f', g0(5), g_opt(5), residual(5))]);
 
 %% Display Elapsed Time
 Elapsed_Time = toc;

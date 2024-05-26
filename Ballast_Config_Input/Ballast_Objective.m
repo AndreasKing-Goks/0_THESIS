@@ -10,14 +10,18 @@ funargs = ofunargs{3};
 %% Compute the objective value
 g_obj = Ballast_Compute(Ballast_Config);
 
-objective = g0(3:5) - g_obj(3:5);
+objective = g_obj(3:5) - g0(3:5);
 
 % objective_val = objective' * objective;
 
-objective_val = sum(abs(objective));
+% objective_val = sum(abs(objective));
+w1 = 20;
+w2 = 1;
+w3 = 1;
+objective_val = w1*abs(objective(1)) + w2*abs(objective(2)) + w3*abs(objective(3));
 
-% Add penalty if max ballast usage is reached
-if max_ballast == 1
-    objective_val = objective_val + penalty;
+% Add penalty if heave residual is positive (negatively buoyant)
+if objective(1) > 0
+    % objective_val = objective_val + penalty;
 end
 end

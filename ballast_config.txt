@@ -1,0 +1,23 @@
+% Template
+Opt_Ballast_Config = {"NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN"}
+
+% Case 1 - Exp5
+Opt_Ballast_Config = {"FFN", "NNF", "NNN", "FNN", "NNN", "NFN", "FNN", "NNN", "WA", "WA", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WA", "WN"}
+
+% Case 2 - Exp5
+Opt_Ballast_Config = {"NNN", "NNF", "NFN", "FNN", "NFN", "NNN", "NNN", "FFN", "WN", "WA", "WN", "WN", "WN", "WN", "WA", "WN", "WN", "WA", "WA", "WN"}
+
+% Case 3 - Exp5
+Opt_Ballast_Config = {"NNF", "NNN", "NFN", "NFN", "NNF", "FFN", "NNN", "NNN", "WN", "WA", "WN", "WA", "WN", "WA", "WN", "WN", "WN", "WN", "WN", "WA"}
+
+% Case 4 - Exp5
+Opt_Ballast_Config = {"FFN", "NNN", "NNN", "FNN", "NNF", "FNN", "NNN", "FNN", "WN", "WN", "WN", "WN", "WN", "WN", "WA", "WA", "WA", "WA", "WA", "WA"}
+
+% Case 5 - Exp5
+Opt_Ballast_Config = {"NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN"}
+
+% Case 6 - Exp5
+Opt_Ballast_Config = {"NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN"}
+
+% Case 7 - Exp5
+Opt_Ballast_Config = {"NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "NNN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN", "WN"}

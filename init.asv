@@ -204,9 +204,9 @@ Ballast_Force = Ballast_Compute(Ballast_Config);
 Thruster_Force = zeros(6,1);
 
 %% Additional Force
-m_add = 0.8000;          % kg
-x_add = -0.0500;         % m
-y_add = 0.0500;        % m
+m_add = 0.6000;          % kg
+x_add = 0.2000;         % m
+y_add = -0.0500;        % m
 z_add = -0.1460;        % m
 
 w_add = m_add * Param.Env.g;
@@ -332,8 +332,8 @@ fill(x_fill, y_fill, 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.1); % Fill the a
 legend([legend_f_body, legend_period], 'Location', 'southeast')
 
 % Adding text label to the shaded area
-text(settling_time/2, -2.5, 'Stabilizing Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
-text((stop_time/dt + settling_time)/2, -2.5, 'Maintain Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
+text(settling_time/2, 2.5, 'Stabilizing Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
+text((stop_time/dt + settling_time)/2, 2.5, 'Maintain Phase', 'FontSize', 12, 'Color', 'black', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
 set(gca, 'Color', [0.9 0.9 0.9]);
 set(gcf, 'Color', 'w'); % white background for the figure
 set(findall(gcf, 'Type', 'axes'), 'FontName', 'Helvetica', 'FontWeight', 'bold', 'FontSize', 10); % set font

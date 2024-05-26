@@ -181,30 +181,36 @@ weights_config = opt_prompt(9:end);
 
 % Print Floater Configuration
 disp('Floater housing configuration from top view:')
-disp(['    ', '|FL |', '   ','   ','     ', '|FR |','   '])
-disp(['    |', floaters_config{2}, '|   ','   ','     |', floaters_config{1},'|   '])
-disp(['|OML|', '   ', '|IML|','   ','|IMR|', '   ','|OMR|'])
-disp(['|', floaters_config{8}, '|   |', floaters_config{6},'|   |',floaters_config{5}, '|   |',floaters_config{7},'|'])
-disp(['    ', '|AL |', '   ','   ','     ', '|AR |','   '])
-disp(['    |', floaters_config{4}, '|   ','   ','     |', floaters_config{3},'|   '])
+disp(['    ', '     ','     ','  Front','     ','     ', '    '])
+disp(['    ', '    ', '|FL |', '   ','   ','     ', '|FR |','   ', '    '])
+disp(['    ', '    |', floaters_config{2}, '|   ','   ','     |', floaters_config{1},'|   ', '    '])
+disp(['Left' ,'|OML|', '   ', '|IML|','   ','|IMR|', '   ','|OMR|', 'Right'])
+disp(['    ', '|', floaters_config{8}, '|   |', floaters_config{6},'|   |',floaters_config{5}, '|   |',floaters_config{7},'|', '    '])
+disp(['    ', '    ', '|AL |', '   ','   ','     ', '|AR |','   ', '    '])
+disp(['    ', '    |', floaters_config{4}, '|   ','   ','     |', floaters_config{3},'|   ', '    '])
+disp(['    ', '     ','     ','   Aft ','     ','     ', '    '])
 disp(' ');
 
 % Print Weight Configuration
 disp('Weight configuration from top view:')
-disp(['|W03|','|W04|','|W05|','|W02|','|W01|'])
-disp([weights_config{3}, weights_config{4}, weights_config{5}, weights_config{2}, weights_config{1}])
-disp(['     ','     ','|W06|','     ','     '])
-disp(['     ','     |', ,'|     ','     '])
-disp(['     ','     ','|W07|','     ','     '])
-disp(['|W09|','|W10|','|W08|','|W12|','|W11|'])
-disp([floaters_config{9},floaters_config{10},floaters_config{8},floaters_config{12},floaters_config{11}])
+disp(['    ', '     ','     ','Front','     ','     ', '    '])
+disp(['    ', '|W03|','|W04|','|W05|','|W02|','|W01|', '    '])
+disp(['    ', '|', weights_config{3}, ' ||', weights_config{4}, ' ||', weights_config{5}, ' ||', weights_config{2}, ' ||', weights_config{1}, ' |', '    '])
+disp(['    ', '     ','     ','|W06|','     ','     ', '    '])
+disp(['Left', '     ','     |', weights_config{6},' |     ','     ', 'Right'])
+disp(['    ', '     ','     ','|W07|','     ','     ', '    '])
+disp(['    ', '     ','     |', weights_config{7},' |     ','     ', '    '])
+disp(['    ', '|W011|','|W12|','|W08|','|W10|','|W09|', '    '])
+disp(['    ', '|', weights_config{11}, ' ||', weights_config{12}, ' ||', weights_config{8}, ' ||', weights_config{10}, ' ||', weights_config{9}, ' |', '    '])
+disp(['    ', '     ','     ',' Aft ','     ','     ', '    '])
+disp(' ')
 
 % Check final ballast term and the residual
 g_opt = Ballast_Compute(best_ballast_config);
-residual = (g0 - g_opt);
+residual = ([0; 0; g0(3:5); 0] - g_opt);
 
 % Header
-disp('        g0       g_opt    residual');
+disp('        g0_maintain       g0(zeta)    residual');
 
 % Data rows
 disp(['Z    ', sprintf('%0.4f    %0.4f    %0.4f', g0(3), g_opt(3), residual(3))]);
@@ -214,5 +220,5 @@ disp(['M    ', sprintf('%0.4f    %0.4f    %0.4f', g0(5), g_opt(5), residual(5))]
 %% Display Elapsed Time
 Elapsed_Time = toc;
 fprintf('Elapsed time is %f seconds.\n', Elapsed_Time);
-disp(' ')
+
 end

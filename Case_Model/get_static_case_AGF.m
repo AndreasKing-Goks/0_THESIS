@@ -1,8 +1,8 @@
 function [X_ref, Y_ref, Z_ref, Phi_ref, Theta_ref, Psi_ref, time_stamps_x, time_stamps_y, time_stamps_z, time_stamps_phi, time_stamps_theta, time_stamps_psi] = get_heave_case_AGF( ...
     idle_time, stop_time)
 %% Initialize mission boundaries
-start_pos = -0.5;
-end_pos = -0.5;
+start_pos = 0.5;
+end_pos = 0.5;
 
 %% Initialize idle start
 idle_start = {[start_pos,0], [start_pos,idle_time]};
@@ -22,10 +22,10 @@ t4 = idle_time + 4*time_cp_step;
 
 % Setpoints
 % note: ALWAYS CHECK WITH THE MISSION BOUNDARY
-cp1 = -0.5;
-cp2 = -0.5;
-cp3 = -0.5;
-cp4 = -0.5;
+cp1 = 0.5;
+cp2 = 0.5;
+cp3 = 0.5;
+cp4 = 0.5;
 
 set_points_heave = {[cp1, t1], [cp2, t2], [cp3, t3], [cp4, t4]};
 

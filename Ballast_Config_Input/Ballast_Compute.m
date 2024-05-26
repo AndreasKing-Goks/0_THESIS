@@ -16,7 +16,7 @@ for i = 1:numel(Ballast_Config)
         % Compute
         Z_Ballast = -(F);
         K_Ballast = -(y * F);
-        M_Ballast = -(x * F);
+        M_Ballast = (x * F);
 
         % Store
         g0(3) = g0(3) + Z_Ballast;
@@ -28,5 +28,5 @@ for i = 1:numel(Ballast_Config)
     end
 end
 %% Ballast Term
-Ballast_Term = g0;
+Ballast_Term = -g0;
 end
