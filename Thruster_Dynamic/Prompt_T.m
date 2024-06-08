@@ -9,20 +9,21 @@ clc
 % DEADZONE RANGE CHECK THRUSTER DOCS, SET FOR EACH VOLTAGE
 % SOME INTERPOLATION MIGHT ALSO BE NEEDED FOR THE DEADZONE
 
-% Thrust to PWM
-val_desired = 0.07;
-mode = 0; 
+% % Thrust to PWM
+% val_desired = 0.07;
+% mode = 0; 
 
-% % PWM to Thrust
-% val_desired = 1500;
-% mode = 1; 
+% PWM to Thrust
+val_desired = 1600;
+disp(class(val_desired))
+mode = 1; 
 
 % Operating Voltage
 voltage = 10;
 
 % Check Thrust Allocation Matrix
-T = Thrust_Allocation()
-T_inv = pinv(T)
+% T = Thrust_Allocation()
+% T_inv = pinv(T)
 
 % Get result
 % result = Convert_Thrust_PWM(val_desired,voltage,mode)
